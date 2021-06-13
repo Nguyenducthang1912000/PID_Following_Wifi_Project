@@ -1,0 +1,43 @@
+#id1 {
+    font-size: 30px;
+}
+
+.Kp_input {
+    font-size: 20px;
+    color: brown;
+}
+
+.Ki_input {
+    font-size: 20px;
+    color: dodgerblue;
+}
+
+.Kd_input {
+    font-size: 20px;
+    color: gold;
+}
+
+#input {
+    margin: auto;
+    width: 65%;
+    padding: 10px;
+    border: 3px solid green;
+}
+
+.Intro {
+    text-align: center;
+    padding-bottom: 240px;
+    color: crimson;
+}
+
+#Result {
+    margin: auto;
+    width: 17%;
+}
+
+.Project_name {
+    text-align: center;
+    font-size: 50px;
+    padding-top: 50px;
+    color: red;
+}

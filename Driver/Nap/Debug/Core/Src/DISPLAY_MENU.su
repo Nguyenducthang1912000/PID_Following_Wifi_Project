@@ -1,0 +1,9 @@
+DISPLAY_MENU.c:48:6:Menu_system_control	16	static
+DISPLAY_MENU.c:73:6:Mainmenu	16	static
+DISPLAY_MENU.c:147:6:PID_menu	24	static
+DISPLAY_MENU.c:204:6:Speed_menu	16	static
+DISPLAY_MENU.c:238:6:Color_Studying_process	32	static
+DISPLAY_MENU.c:276:6:LineDetect_show	16	static
+DISPLAY_MENU.c:336:6:Saving_Process	16	static
+DISPLAY_MENU.c:347:6:Wifi_Connect_establish	56	static
+DISPLAY_MENU.c:370:6:executeAction	16	static
