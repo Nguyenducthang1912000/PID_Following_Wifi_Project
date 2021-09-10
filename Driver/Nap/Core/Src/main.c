@@ -33,10 +33,10 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define Number_of_Menu_firstline 		1
-#define Maximum_Menu_line 				7
+#define Maximum_Menu_line 				8
 #define Maximum_PID_line 				4
 #define Maximum_Engine_line 			3
-
+#define Maximum_Path_Solver_line		4
 /* Menu Types definition -----------------------------------------------------*/
 #define Running_menu 					0
 #define Main_menu 						1
@@ -45,7 +45,9 @@
 #define Engine_menu 					4
 #define LineDetect_Show 				5
 #define Wifi_Connect 					6
-#define Saving_Process 					7
+#define Saving_process 					7
+#define Path_solver						8
+#define Path_show_menu					9
 
 /* Increase or Decrease amount for PID ---------------------------------------*/
 #define Kp_amount 					 0.01f
@@ -68,6 +70,8 @@ DMA_HandleTypeDef hdma_adc1;
 
 I2C_HandleTypeDef hi2c3;
 
+SPI_HandleTypeDef hspi2;
+
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
@@ -83,19 +87,25 @@ extern uint8_t line;
 extern uint8_t Color_Read;
 extern uint8_t Wifi_Connecting;
 uint8_t LineDetect = 0;
-uint8_t stateBTNC = 1;
+volatile uint8_t stateBTNC = 1;
 uint8_t cancer_menu = 1;
 uint8_t cancer_running = 1;
 uint8_t Kp_modify_flag = 0, Ki_modify_flag = 0, Kd_modify_flag = 0;
 uint8_t Left_modify_flag = 0, Right_modify_flag = 0;
-int16_t Left = 6500, Right = 6500;
+uint8_t First_point_modify_flag = 0, Last_point_modify_flag = 0;
+int8_t First_point = 0,Last_point = 0;
+int16_t Left = 6999, Right = 7200;
 uint16_t Sensor_Threshold[] = { 3900, 3900, 3900, 4000, 4000, 4000 };
 uint16_t Sensor_ADC_Value[6];
+//uint32_t counterLeft = 0,counterRight = 0;
+//int16_t countLeft = 0, countRight = 0;
 int Motor_Speed_L,Motor_Speed_R;
+//int Speed_Left = 0, Speed_Right = 0;
 float Kp = 0, Ki = 0, Kd = 0;
 char string_2[1];
 char PID_Rx[12];
 char kp_val[10], ki_val[10], kd_val[10];
+
 extern char Rx_Buff[19];
 PIDController Car = {0,0,0,0,-400,400};
 /* USER CODE END PV */
@@ -111,6 +121,7 @@ static void MX_ADC1_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_I2C3_Init(void);
 static void MX_TIM5_Init(void);
+static void MX_SPI2_Init(void);
 /* USER CODE BEGIN PFP */
 static void SelectItem(void);
 void Sensor_Convert_A2D(void);
@@ -118,7 +129,8 @@ void Sensor_Print_LineDetect();
 static void MultifunctionButton(void);
 static void ScrollUp(void);
 static void ReadFlash(void);
-int Error_Return (uint8_t Sensor_Array);
+static int Error_Return (uint8_t Sensor_Array);
+static int Constraint (int Present_Value,int Min,int Max);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -129,6 +141,13 @@ PUTCHAR_PROTOTYPE {
 	HAL_UART_Transmit(&huart6, (uint8_t*) &ch, 1, 0xFFFF);
 	return ch;
 }
+
+//void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim){
+//		counterLeft = __HAL_TIM_GET_COUNTER(&htim2);
+//		counterRight = __HAL_TIM_GET_COUNTER(&htim4);
+//		countLeft = (int16_t)counterLeft*(-1);
+//		countRight = (int16_t)counterRight;
+//}
 /* USER CODE END 0 */
 
 /**
@@ -167,11 +186,15 @@ int main(void)
   MX_TIM4_Init();
   MX_I2C3_Init();
   MX_TIM5_Init();
+  MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
   lcd_init();
   MotorL_EnablePWM();
   MotorR_EnablePWM();
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &Sensor_ADC_Value, 6);
+  /*Enable for encoder reading*/
+//  HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_ALL);
+//  HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL);
   PIDController_Car_Init(&Car);
   /* USER CODE END 2 */
 
@@ -179,8 +202,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	while (1) {
 		ReadFlash();
-		lcd_clear();
-		while (menu_display) {
+		lcd_send_cmd(1);
+		while (menu_display)
+		{
 			Car.Kp = Kp;
 			Car.Kd = Kd;
 			Menu_system_control(Menu_type, line);
@@ -363,6 +387,43 @@ static void MX_I2C3_Init(void)
 }
 
 /**
+  * @brief SPI2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI2_Init(void)
+{
+
+  /* USER CODE BEGIN SPI2_Init 0 */
+
+  /* USER CODE END SPI2_Init 0 */
+
+  /* USER CODE BEGIN SPI2_Init 1 */
+
+  /* USER CODE END SPI2_Init 1 */
+  /* SPI2 parameter configuration*/
+  hspi2.Instance = SPI2;
+  hspi2.Init.Mode = SPI_MODE_SLAVE;
+  hspi2.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi2.Init.NSS = SPI_NSS_SOFT;
+  hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi2.Init.CRCPolynomial = 10;
+  if (HAL_SPI_Init(&hspi2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI2_Init 2 */
+
+  /* USER CODE END SPI2_Init 2 */
+
+}
+
+/**
   * @brief TIM2 Initialization Function
   * @param None
   * @retval None
@@ -387,11 +448,11 @@ static void MX_TIM2_Init(void)
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
-  sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC1Polarity = TIM_ICPOLARITY_FALLING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
   sConfig.IC1Filter = 0;
-  sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC2Polarity = TIM_ICPOLARITY_FALLING;
   sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
   sConfig.IC2Filter = 0;
@@ -489,11 +550,11 @@ static void MX_TIM4_Init(void)
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
-  sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC1Polarity = TIM_ICPOLARITY_FALLING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
   sConfig.IC1Filter = 0;
-  sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC2Polarity = TIM_ICPOLARITY_FALLING;
   sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
   sConfig.IC2Filter = 0;
@@ -623,9 +684,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2|GPIO_PIN_10|GPIO_PIN_12|GPIO_PIN_13
-                          |GPIO_PIN_14|GPIO_PIN_15|GPIO_PIN_5|GPIO_PIN_8
-                          |GPIO_PIN_9, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2|GPIO_PIN_10, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);
@@ -642,12 +701,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB2 PB10 PB12 PB13
-                           PB14 PB15 PB5 PB8
-                           PB9 */
-  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_10|GPIO_PIN_12|GPIO_PIN_13
-                          |GPIO_PIN_14|GPIO_PIN_15|GPIO_PIN_5|GPIO_PIN_8
-                          |GPIO_PIN_9;
+  /*Configure GPIO pins : PB2 PB10 */
+  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_10;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -676,10 +731,10 @@ void Running(void) // Activate the car for running
 	while (cancer_running) {
 	Sensor_Convert_A2D();
 	int16_t PID_val = Line_Follower_PID(3500,Error_Return(LineDetect), &Car);
-	Motor_Speed_R = Right + PID_val;
-	Motor_Speed_L = Left - PID_val;
-	Motor_Speed_R = Contants(Motor_Speed_R, -7200,7200);
-	Motor_Speed_L = Contants(Motor_Speed_L, -7200,7200);
+	Motor_Speed_R = (Right + PID_val);
+	Motor_Speed_L = (Left - PID_val);
+	Motor_Speed_R = Constraint(Motor_Speed_R, -7200,7200);
+	Motor_Speed_L = Constraint(Motor_Speed_L, -7200,7200);
 	MotorR_SetPWM(Motor_Speed_R);
 	MotorL_SetPWM(Motor_Speed_L);
 //	Sensor_Print_LineDetect();
@@ -689,7 +744,7 @@ void Running(void) // Activate the car for running
 	MotorR_SetPWM(0);
 	lcd_clear();
 }
-int Error_Return (uint8_t Sensor_Array){
+static int Error_Return (uint8_t Sensor_Array){
 	switch(Sensor_Array){
 	case 0b00000100:
 		return 8500;
@@ -733,11 +788,13 @@ int Error_Return (uint8_t Sensor_Array){
 	case 0b10000000:
 		return -4500;
 		break;
+	case 0b11111111:
+		return -5500;
 	default:
 		break;
 	}
 }
-int Contants (int Present_Value,int Min,int Max){
+static int Constraint (int Present_Value,int Min,int Max){
 	if(Present_Value > Max){
 		return Present_Value = Max;
 	}
@@ -777,12 +834,9 @@ void Sensor_PrintValue(void)
 }
 void Sensor_Print_LineDetect()
 {
-
 		char buffer[6];
 		itoa (LineDetect,buffer,2);
 		printf ("binary: %s\n",buffer);
-
-
 }
 void ScrollUp(void)
 {
@@ -822,7 +876,6 @@ void ScrollUp(void)
 				Kd += Kd_amount;
 				line = 3;
 			}
-			Menu_system_control(PID_Menu, line);
 			break;
 		case Engine_menu:
 			line--;
@@ -849,6 +902,31 @@ void ScrollUp(void)
 				}
 			}
 			break;
+		case Path_solver:
+			line--;
+			if (line < Number_of_Menu_firstline)
+			{
+				line = Maximum_Path_Solver_line;
+			}
+			if (First_point_modify_flag == 1)
+			{
+				First_point += 1;
+				line = 1;
+				if(First_point>11)
+				{
+					First_point = 0;
+				}
+			}
+			if (Last_point_modify_flag == 1)
+			{
+				Last_point += 1;
+				line = 2;
+				if(Last_point>11)
+				{
+					Last_point = 0;
+				}
+			}
+			break;
 		}
 	}
 }
@@ -862,7 +940,7 @@ void SelectItem(void)
 		}
 		executeAction(line);
 		if (Kp_modify_flag == 1 || Ki_modify_flag == 1 || Kd_modify_flag == 1
-				|| Right_modify_flag == 1 || Left_modify_flag == 1)
+				|| Right_modify_flag == 1 || Left_modify_flag == 1 || First_point_modify_flag == 1 || Last_point_modify_flag == 1)
 		{
 			__NOP();
 		}
@@ -887,7 +965,6 @@ void MultifunctionButton(void)
 		{
 			line = Number_of_Menu_firstline;
 		}
-		Menu_system_control(Menu_type, line);
 		break;
 	case PID_Menu:
 		line++;
@@ -916,7 +993,6 @@ void MultifunctionButton(void)
 			if (Kd <= 0)
 				{Kd = 0;}
 		}
-		Menu_system_control(Menu_type, line);
 		break;
 	case Engine_menu:
 		line++;
@@ -938,7 +1014,6 @@ void MultifunctionButton(void)
 			if (Right <= -7200)
 				{Right = -7200;}
 		}
-		Menu_system_control(Menu_type, line);
 		break;
 	case LineDetect_Show:
 		Menu_type = Main_menu;
@@ -949,6 +1024,35 @@ void MultifunctionButton(void)
 	case Color_Processing:
 		Color_Read = 0;
 		break;
+	case Path_solver:
+		line++;
+		if (line > Maximum_Path_Solver_line)
+		{
+			line = Number_of_Menu_firstline;
+		}
+		if (First_point_modify_flag == 1)
+		{
+			First_point -= 1;
+			line = 1;
+			if(First_point < 0)
+			{
+				First_point = 11;
+			}
+		}
+		if (Last_point_modify_flag == 1)
+		{
+			Last_point -= 1;
+			line = 2;
+			if(Last_point < 0)
+			{
+				Last_point = 11;
+			}
+		}
+		break;
+		case Path_show_menu:
+			Menu_type = Path_solver;
+			line = 1;
+			break;
 	}
 
 }

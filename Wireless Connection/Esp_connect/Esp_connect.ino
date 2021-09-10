@@ -1,4 +1,4 @@
-#include <ESP8266HTTPClient.h>
+z#include <ESP8266HTTPClient.h>
 #include <ESP8266WiFi.h>
 #include <ArduinoJson.h>
 #include <SocketIoClient.h>
@@ -65,7 +65,5 @@ void setup() {
 }
 void loop() {
   // put your main code here, to run repeatedly
-  while(!TxFlag){
   webSocket.loop();
-  }
 }

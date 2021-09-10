@@ -8,6 +8,7 @@ C_SRCS += \
 ../Core/Src/FLASH_SECTOR.c \
 ../Core/Src/HAL_I2C_LCD.c \
 ../Core/Src/HAL_MOTOR_CONTROL.c \
+../Core/Src/Matrix_solver.c \
 ../Core/Src/PID.c \
 ../Core/Src/UartRingBuffer.c \
 ../Core/Src/main.c \
@@ -22,6 +23,7 @@ OBJS += \
 ./Core/Src/FLASH_SECTOR.o \
 ./Core/Src/HAL_I2C_LCD.o \
 ./Core/Src/HAL_MOTOR_CONTROL.o \
+./Core/Src/Matrix_solver.o \
 ./Core/Src/PID.o \
 ./Core/Src/UartRingBuffer.o \
 ./Core/Src/main.o \
@@ -36,6 +38,7 @@ C_DEPS += \
 ./Core/Src/FLASH_SECTOR.d \
 ./Core/Src/HAL_I2C_LCD.d \
 ./Core/Src/HAL_MOTOR_CONTROL.d \
+./Core/Src/Matrix_solver.d \
 ./Core/Src/PID.d \
 ./Core/Src/UartRingBuffer.d \
 ./Core/Src/main.d \
@@ -55,6 +58,8 @@ Core/Src/HAL_I2C_LCD.o: ../Core/Src/HAL_I2C_LCD.c
 	arm-none-eabi-gcc "$<" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/HAL_I2C_LCD.d" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
 Core/Src/HAL_MOTOR_CONTROL.o: ../Core/Src/HAL_MOTOR_CONTROL.c
 	arm-none-eabi-gcc "$<" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/HAL_MOTOR_CONTROL.d" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
+Core/Src/Matrix_solver.o: ../Core/Src/Matrix_solver.c
+	arm-none-eabi-gcc "$<" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/Matrix_solver.d" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
 Core/Src/PID.o: ../Core/Src/PID.c
 	arm-none-eabi-gcc "$<" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/PID.d" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
 Core/Src/UartRingBuffer.o: ../Core/Src/UartRingBuffer.c

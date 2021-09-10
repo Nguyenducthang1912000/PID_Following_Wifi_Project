@@ -22,8 +22,8 @@ io.on("connection", function (socket) {
     socket.on("web-send-data", function (data) {
         console.log(data)
         // socket.emit("server-received");
-        for(i=0;i<7;i++){
-            setTimeout(function(){
+        for (i = 0; i < 7; i++) {
+            setTimeout(function () {
                 io.sockets.emit("data-server-to-esp", data);
             }, 300);
 

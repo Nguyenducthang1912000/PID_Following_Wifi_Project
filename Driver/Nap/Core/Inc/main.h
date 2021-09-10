@@ -42,6 +42,7 @@ extern "C" {
 #include "DISPLAY_MENU.h"
 #include "FLASH_SECTOR.h"
 #include "UartRingBuffer.h"
+#include "Matrix_solver.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

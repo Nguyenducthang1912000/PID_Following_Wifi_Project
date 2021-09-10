@@ -4,7 +4,7 @@
  *  Created on: May 6, 2021
  *      Author: DucThang
  */
-#include <DISPLAY_MENU.h>
+#include "DISPLAY_MENU.h"
 /* Menu Types definition -----------------------------------------------------*/
 #define Running_Process 				0
 #define Main_menu 						1
@@ -13,6 +13,9 @@
 #define Engine_menu 					4
 #define LineDetect_Show 				5
 #define Wifi_connect 					6
+#define Saving_process 					7
+#define Path_solver_menu				8
+#define Path_show_menu					9
 
 #define ADC_Sample_Times				50000
 #define Number_of_Sensors			 	6
@@ -20,7 +23,7 @@
 /* Value modify flag --------------------------------------------------------*/
 extern uint8_t Kp_modify_flag, Ki_modify_flag, Kd_modify_flag;
 extern uint8_t Left_modify_flag, Right_modify_flag;
-
+extern uint8_t First_point_modify_flag, Last_point_modify_flag;
 /* Exit menu showing process ------------------------------------------------*/
 extern uint8_t cancer_menu;
 
@@ -29,17 +32,18 @@ extern uint8_t cancer_running;
 
 /* System private value -----------------------------------------------------*/
 extern float Kp, Ki, Kd;
+extern int8_t First_point,Last_point;
 /* System buffer ------------------------------------------------------------*/
-char kp_val[5], ki_val[5], kd_val[5];
+char kp_val[6], ki_val[6], kd_val[6];
 char kp_str[20], ki_str[20], kd_str[20];
 char string[12];
 char Left_str[20], Right_str[20];
 char Left_val[5], Right_val[5];
 char Rx_Buff[24] = {0};
-
+char First_str[20],Last_str[20];
 /* Menu control flag --------------------------------------------------------*/
-uint8_t menu_display = 1;
-uint8_t Menu_type = 1;
+volatile uint8_t menu_display = 1;
+volatile uint8_t Menu_type = 1;
 uint8_t Run_flag = 0;
 uint8_t Color_Read = 1;
 uint8_t Wifi_Connecting = 1;
@@ -49,6 +53,18 @@ extern int16_t Left, Right;
 extern uint16_t Sensor_Threshold[6];
 extern uint16_t Sensor_ADC_Value[6];
 
+/* Function prototype -------------------------------------------------------*/
+static void Mainmenu(uint8_t line);
+static void Color_Studying_process(void);
+static void PID_menu(uint8_t line);
+static void Speed_menu(uint8_t line);
+static void LineDetect_show(void);
+static void Wifi_Connect_establish(void);
+static void Path_Solver(uint8_t line_no);
+static void Path_show(void);
+void Running(void);
+
+/* Function declaration ----------------------------------------------------*/
 void Menu_system_control(uint8_t Menu_type, uint8_t line) {
 	switch (Menu_type) {
 	case 0:
@@ -72,10 +88,15 @@ void Menu_system_control(uint8_t Menu_type, uint8_t line) {
 	case Wifi_connect:
 		Wifi_Connect_establish();
 		break;
+	case Path_solver_menu:
+		Path_Solver(line);
+		break;
+	case Path_show_menu:
+		Path_show();
 	}
 }
 
-void Mainmenu(uint8_t line) {
+static void Mainmenu(uint8_t line) {
 	switch (line) {
 	case 1:
 		lcd_send_cmd(0x80 | 0x00);
@@ -125,7 +146,7 @@ void Mainmenu(uint8_t line) {
 		lcd_send_cmd(0x80 | 0x14);
 		lcd_send_string(" Wifi Connect       ");
 		lcd_send_cmd(0x80 | 0x54);
-		lcd_send_string("                    ");
+		lcd_send_string(" Path Solver        ");
 		break;
 	case 6:
 		lcd_send_cmd(0x80 | 0x00);
@@ -135,7 +156,7 @@ void Mainmenu(uint8_t line) {
 		lcd_send_cmd(0x80 | 0x14);
 		lcd_send_string(" Wifi Connect       ");
 		lcd_send_cmd(0x80 | 0x54);
-		lcd_send_string("                    ");
+		lcd_send_string(" Path Solver        ");
 		break;
 	case 7:
 		lcd_send_cmd(0x80 | 0x00);
@@ -145,12 +166,22 @@ void Mainmenu(uint8_t line) {
 		lcd_send_cmd(0x80 | 0x14);
 		lcd_send_string(">Wifi Connect       ");
 		lcd_send_cmd(0x80 | 0x54);
-		lcd_send_string("                    ");
+		lcd_send_string(" Path Solver        ");
+		break;
+	case 8:
+		lcd_send_cmd(0x80 | 0x00);
+		lcd_send_string(" Line Detect show   ");
+		lcd_send_cmd(0x80 | 0x40);
+		lcd_send_string(" Save system value  ");
+		lcd_send_cmd(0x80 | 0x14);
+		lcd_send_string(" Wifi Connect       ");
+		lcd_send_cmd(0x80 | 0x54);
+		lcd_send_string(">Path Solver        ");
 		break;
 	}
 }
 
-void PID_menu(uint8_t line) {
+static void PID_menu(uint8_t line) {
 
 	switch (line) {
 	case 1:
@@ -207,7 +238,7 @@ void PID_menu(uint8_t line) {
 		break;
 	}
 }
-void Speed_menu(uint8_t line) {
+static void Speed_menu(uint8_t line) {
 	switch (line) {
 	case 1:
 		sprintf(Left_str, ">Left Eng = %d", Left);
@@ -242,7 +273,7 @@ void Speed_menu(uint8_t line) {
 	}
 }
 
-void Color_Studying_process(void) {
+static void Color_Studying_process(void) {
 	uint16_t BlackLine[] = {0 ,0 ,0 ,0, 0, 0};
 	Color_Read = 1;
 	lcd_send_cmd(0x80 | 0x00);
@@ -281,7 +312,7 @@ void Color_Studying_process(void) {
 	lcd_clear();
 }
 
-void LineDetect_show(void) {
+static void LineDetect_show(void) {
 	lcd_send_cmd(0x80 | 0x00);
 	lcd_send_string("Line Detect        ");
 	lcd_send_cmd(0x80 | 0x40);
@@ -341,7 +372,7 @@ void LineDetect_show(void) {
 	lcd_clear();
 }
 
-void Saving_Process(void)
+static void Saving_Process(void)
 {
 		sprintf(kp_val,"%.2f ",Kp);
 		strcat(string,kp_val);
@@ -353,7 +384,7 @@ void Saving_Process(void)
 		HAL_NVIC_SystemReset();
 }
 
-void Wifi_Connect_establish(void)
+static void Wifi_Connect_establish(void)
 {
 	char Rx_Buff[24] = {0};
 	Wifi_Connecting = 1;
@@ -376,7 +407,70 @@ void Wifi_Connect_establish(void)
 		Menu_type = Main_menu;
 		lcd_clear();
 }
-
+static void Path_Solver(uint8_t line)
+{
+	switch (line) {
+		case 1:
+			sprintf(First_str, ">First Point: %2d  ", First_point);
+			lcd_send_cmd(0x80 | 0x00);
+			lcd_send_string(First_str);
+			sprintf(Last_str, " Last Point: %2d  ", Last_point);
+			lcd_send_cmd(0x80 | 0x40);
+			lcd_send_string(Last_str);
+			lcd_send_cmd(0x80 | 0x14);
+			lcd_send_string(" Submit             ");
+			lcd_send_cmd(0x80 | 0x54);
+			lcd_send_string(" Return to main menu");
+			break;
+		case 2:
+			sprintf(First_str, " First Point: %2d  ", First_point);
+			lcd_send_cmd(0x80 | 0x00);
+			lcd_send_string(First_str);
+			sprintf(Last_str, ">Last Point: %2d  ", Last_point);
+			lcd_send_cmd(0x80 | 0x40);
+			lcd_send_string(Last_str);
+			lcd_send_cmd(0x80 | 0x14);
+			lcd_send_string(" Submit             ");
+			lcd_send_cmd(0x80 | 0x54);
+			lcd_send_string(" Return to main menu");
+			break;
+		case 3:
+			sprintf(First_str, " First Point: %2d  ", First_point);
+			lcd_send_cmd(0x80 | 0x00);
+			lcd_send_string(First_str);
+			sprintf(Last_str, " Last Point: %2d  ", Last_point);
+			lcd_send_cmd(0x80 | 0x40);
+			lcd_send_string(Last_str);
+			lcd_send_cmd(0x80 | 0x14);
+			lcd_send_string(">Submit             ");
+			lcd_send_cmd(0x80 | 0x54);
+			lcd_send_string(" Return to main menu");
+			break;
+		case 4:
+			sprintf(First_str, " First Point: %2d  ", First_point);
+			lcd_send_cmd(0x80 | 0x00);
+			lcd_send_string(First_str);
+			sprintf(Last_str, " Last Point: %2d  ", Last_point);
+			lcd_send_cmd(0x80 | 0x40);
+			lcd_send_string(Last_str);
+			lcd_send_cmd(0x80 | 0x14);
+			lcd_send_string(" Submit             ");
+			lcd_send_cmd(0x80 | 0x54);
+			lcd_send_string(">Return to main menu");
+			break;
+	}
+}
+static void Path_show(void)
+{
+	char takeResult_str[20];
+	Solver(First_point, Last_point, takeResult_str);
+	lcd_send_cmd(0x80 | 0x00);
+	lcd_send_string("Path direction      ");
+	lcd_send_cmd(0x80 | 0x40);
+	lcd_send_string(takeResult_str);
+	lcd_send_cmd(0x80 | 0x14);
+	lcd_send_string("Press C to return   ");
+}
 void executeAction(uint8_t line) {
 	switch (line) {
 	case 1:
@@ -401,8 +495,18 @@ void executeAction(uint8_t line) {
 				Left_modify_flag = 0;
 			}
 			break;
-
+		case Path_solver_menu:
+			if (First_point_modify_flag == 0){
+				First_point_modify_flag = 1;
+				line = 1;
+			}
+			else
+			{
+				First_point_modify_flag = 0;
+			}
+			break;
 		}
+
 		lcd_clear();
 		break;
 
@@ -427,7 +531,16 @@ void executeAction(uint8_t line) {
 				Right_modify_flag = 0;
 			}
 			break;
+		case Path_solver_menu:
+			if (Last_point_modify_flag == 0) {
+				Last_point_modify_flag = 1;
+				line = 2;
+			} else {
+				Last_point_modify_flag = 0;
+			}
+			break;
 		}
+
 		lcd_clear();
 		break;
 
@@ -447,8 +560,11 @@ void executeAction(uint8_t line) {
 		case Engine_menu:
 			Menu_type = Main_menu;
 			break;
-
+		case Path_solver_menu:
+			Menu_type = Path_show_menu;
+			break;
 		}
+
 		lcd_clear();
 		break;
 
@@ -458,6 +574,9 @@ void executeAction(uint8_t line) {
 			Menu_type = Engine_menu;
 			break;
 		case PID_Menu:
+			Menu_type = Main_menu;
+			break;
+		case Path_solver_menu:
 			Menu_type = Main_menu;
 			break;
 		}
@@ -481,6 +600,11 @@ void executeAction(uint8_t line) {
 
 	case 7:
 		Menu_type = Wifi_connect;
+		lcd_clear();
+		break;
+
+	case 8:
+		Menu_type = Path_solver_menu;
 		lcd_clear();
 		break;
 	}

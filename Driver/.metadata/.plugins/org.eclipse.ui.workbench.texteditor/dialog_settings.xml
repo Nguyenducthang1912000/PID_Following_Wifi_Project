@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="buffer"/>
+		<item key="selection" value="menu_display"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="menu_display"/>
+			<item value="Running_menu"/>
+			<item value="Running_Process"/>
+			<item value="kp_val"/>
+			<item value="Path_solver"/>
+			<item value="Last_point_modify_flag"/>
+			<item value="Saving_process"/>
 			<item value="buffer"/>
 			<item value="Left_str"/>
 			<item value="string_2"/>
@@ -16,6 +23,7 @@
 			<item value="Line"/>
 		</list>
 		<list key="replacehistory">
+			<item value="Path_solver_menu"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
