@@ -110,10 +110,13 @@ void Solver(int Dau ,int Cuoi,char *takeResult)
         if(i == length - 1)
         {
             sprintf(buffer,"%d",result[i]);
+            strcat(concat_buffer,buffer);
         }
         else
+        {
             sprintf(buffer,"%d -> ",result[i]);
             strcat(concat_buffer,buffer);
+        }
     }
     strcpy(takeResult,concat_buffer);
 }

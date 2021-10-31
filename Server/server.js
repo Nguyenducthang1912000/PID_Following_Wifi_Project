@@ -21,13 +21,13 @@ io.on("connection", function (socket) {
     // socket.emit("data-server-to-esp", "haha");
     socket.on("web-send-data", function (data) {
         console.log(data)
-        // socket.emit("server-received");
-        for (i = 0; i < 7; i++) {
+        socket.emit("server-received");
+        for (i = 0; i < 6; i++) {
             setTimeout(function () {
                 io.sockets.emit("data-server-to-esp", data);
-            }, 300);
-
+            }, 1); 
         }
+        // io.sockets.emit("data-server-to-esp", data);
     });
 });
 

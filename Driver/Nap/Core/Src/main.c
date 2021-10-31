@@ -77,6 +77,7 @@ TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim5;
 
+UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart6;
 
 /* USER CODE BEGIN PV */
@@ -105,7 +106,7 @@ float Kp = 0, Ki = 0, Kd = 0;
 char string_2[1];
 char PID_Rx[12];
 char kp_val[10], ki_val[10], kd_val[10];
-
+char Rx_Buffer[18],Rx_Buffer_copied[17];
 extern char Rx_Buff[19];
 PIDController Car = {0,0,0,0,-400,400};
 /* USER CODE END PV */
@@ -122,6 +123,7 @@ static void MX_TIM4_Init(void);
 static void MX_I2C3_Init(void);
 static void MX_TIM5_Init(void);
 static void MX_SPI2_Init(void);
+static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 static void SelectItem(void);
 void Sensor_Convert_A2D(void);
@@ -142,12 +144,30 @@ PUTCHAR_PROTOTYPE {
 	return ch;
 }
 
-//void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim){
-//		counterLeft = __HAL_TIM_GET_COUNTER(&htim2);
-//		counterRight = __HAL_TIM_GET_COUNTER(&htim4);
-//		countLeft = (int16_t)counterLeft*(-1);
-//		countRight = (int16_t)counterRight;
-//}
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+//	for (int i = 0; i < sizeof(Rx_Buffer); i++)
+//	    {
+//	        if (i == sizeof(Rx_Buffer) - 1)
+//	        {
+//	            printf("%cend\n",Rx_Buffer[i]);
+//	        }
+//	        else
+//	            printf("%c,",Rx_Buffer[i]);
+//
+//	    }
+	strcpy(Rx_Buffer_copied,Rx_Buffer);
+	char *KpinString = strtok(Rx_Buffer_copied," ");
+	char *KiinString = strtok(NULL," ");
+	char *KdinString = strtok(NULL,"");
+	Kp = strtof(KpinString,NULL);
+	Ki = strtof(KiinString,NULL);
+	Kd = strtof(KdinString,NULL);
+	memset(Rx_Buffer_copied,0,sizeof(Rx_Buffer_copied));
+	memset(Rx_Buffer,0,sizeof(Rx_Buffer));
+	HAL_UART_Receive_IT(&huart6, Rx_Buffer, 18);
+
+}
 /* USER CODE END 0 */
 
 /**
@@ -187,11 +207,13 @@ int main(void)
   MX_I2C3_Init();
   MX_TIM5_Init();
   MX_SPI2_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   lcd_init();
   MotorL_EnablePWM();
   MotorR_EnablePWM();
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &Sensor_ADC_Value, 6);
+  HAL_UART_Receive_IT(&huart6, Rx_Buffer, 18);
   /*Enable for encoder reading*/
 //  HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_ALL);
 //  HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL);
@@ -403,12 +425,13 @@ static void MX_SPI2_Init(void)
   /* USER CODE END SPI2_Init 1 */
   /* SPI2 parameter configuration*/
   hspi2.Instance = SPI2;
-  hspi2.Init.Mode = SPI_MODE_SLAVE;
+  hspi2.Init.Mode = SPI_MODE_MASTER;
   hspi2.Init.Direction = SPI_DIRECTION_2LINES;
   hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -620,6 +643,39 @@ static void MX_TIM5_Init(void)
 }
 
 /**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
   * @brief USART6 Initialization Function
   * @param None
   * @retval None
@@ -684,10 +740,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2|GPIO_PIN_10, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2|GPIO_PIN_10|GPIO_PIN_5, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : ButtonC_Pin */
   GPIO_InitStruct.Pin = ButtonC_Pin;
@@ -701,19 +754,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB2 PB10 */
-  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_10;
+  /*Configure GPIO pins : PB2 PB10 PB5 */
+  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_10|GPIO_PIN_5;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PA9 */
-  GPIO_InitStruct.Pin = GPIO_PIN_9;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);

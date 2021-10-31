@@ -1,4 +1,5 @@
-z#include <ESP8266HTTPClient.h>
+
+#include <ESP8266HTTPClient.h>
 #include <ESP8266WiFi.h>
 #include <ArduinoJson.h>
 #include <SocketIoClient.h>
@@ -11,12 +12,42 @@ unsigned int port = 3000;
 const char* Host_Socket = "192.168.1.32";
 unsigned int Port_Socket = 3000;
 float P,I,D;
-int TxFlag = 0;
-String TxString;
-char kp_val[5],ki_val[5],kd_val[5];
 void Server_Data(const char* payload,size_t length){
-//  Serial.print(payload);
   pareJson_Data(payload);
+}
+void Print_character(char *input, int sizeofstring)
+{
+    for (int i = 0; i < sizeofstring; i++)
+    {
+        if (i == sizeofstring - 1)
+        {
+            printf("%cend\n",input[i]);
+        }
+        else
+            printf("%c,",input[i]);
+    }
+    
+}
+void PID_String_compression(float kp,float ki,float kd)
+{
+  char Kp_string[7],Ki_string[7],Kd_string[6],Final_string[17];
+  memset(Final_string,0,sizeof(Final_string));
+  sprintf(Kp_string,"%05.2f ",kp);
+  sprintf(Ki_string,"%05.2f ",ki);
+  sprintf(Kd_string,"%05.2f",kd);
+  for(int i = 0;i < 6 ;i++)
+  {
+    Final_string[i] = Kp_string[i];
+  }
+  for(int i = 0;i < 6 ;i++)
+  {
+    Final_string[i+6] = Ki_string[i];
+  }
+  for(int i = 0;i < 5 ;i++)
+  {
+    Final_string[i+12] = Kd_string[i];
+  }
+  Serial.write(Final_string,17);
 }
 void pareJson_Data(String strJson)
 {
@@ -27,26 +58,9 @@ void pareJson_Data(String strJson)
   }
   else{
     P = (root["P"].as<float>());
-    sprintf(kp_val,"%05.2f ",P);
-    TxString += kp_val;
     I = (root["I"].as<float>());
-    sprintf(ki_val,"%05.2f ",I);
-    TxString += ki_val;
     D = (root["D"].as<float>());
-    sprintf(kd_val,"%05.2f ",D);
-    TxString += kd_val;
-//    int whitespace_amount = 18 - TxString.length();
-//    for(int i = 0;i<whitespace_amount;i++)
-//    {
-//      TxString += " "; 
-//    }
-    int str_len = TxString.length()+1;
-    char TxBuff[str_len];
-    
-    TxString.toCharArray(TxBuff,str_len);
-    TxString = "";
-    Serial.write(TxBuff,str_len);
-//    Serial.print(sizeof(TxBuff));
+    PID_String_compression(P,I,D);
   }
 }
 void setup() {
@@ -56,10 +70,7 @@ void setup() {
   while(WiFi.status() != WL_CONNECTED)
   {
     delay(500);
-//    Serial.print(".");
   }
-//   Serial.println("Ip: ");
-//   Serial.print(WiFi.localIP());
    webSocket.on("data-server-to-esp",Server_Data);
    webSocket.begin(Host_Socket, Port_Socket, "/socket.io/?transport=websocket");
 }
