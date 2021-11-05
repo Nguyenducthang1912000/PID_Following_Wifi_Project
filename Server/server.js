@@ -22,11 +22,7 @@ io.on("connection", function (socket) {
     socket.on("web-send-data", function (data) {
         console.log(data)
         socket.emit("server-received");
-        for (i = 0; i < 6; i++) {
-            setTimeout(function () {
-                io.sockets.emit("data-server-to-esp", data);
-            }, 1); 
-        }
+        io.sockets.emit("data-server-to-esp", data);
         // io.sockets.emit("data-server-to-esp", data);
     });
 });

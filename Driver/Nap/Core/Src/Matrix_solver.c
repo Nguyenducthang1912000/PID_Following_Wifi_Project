@@ -120,3 +120,11 @@ void Solver(int Dau ,int Cuoi,char *takeResult)
     }
     strcpy(takeResult,concat_buffer);
 }
+
+	/*	Cac buoc di
+	  8 -> quay ngược/đi thẳng
+	  3 -> quẹo trái
+	  0 -> quẹo phải
+      1 -> quẹo trái
+      2 -> quẹo phải
+    */

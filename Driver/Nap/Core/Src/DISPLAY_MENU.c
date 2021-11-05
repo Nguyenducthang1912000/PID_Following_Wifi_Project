@@ -386,23 +386,6 @@ static void Saving_Process(void)
 
 static void Wifi_Connect_establish(void)
 {
-	char Rx_Buff[24] = {0};
-	Wifi_Connecting = 1;
-	while(Wifi_Connecting){
-//		HAL_UART_Receive_IT(&huart6, Rx_Buff, sizeof(Rx_Buff));
-		HAL_UART_Receive(&huart6, Rx_Buff, 24, 5000);
-		char *KpinString = strtok(Rx_Buff," ");
-		char *KiinString = strtok(NULL," ");
-		char *KdinString = strtok(NULL," ");
-		Kp = strtod(KpinString, NULL);
-		Ki = strtod(KiinString, NULL);
-		Kd = strtod(KdinString, NULL);
-		if(Kp > 0 && Ki > 0 && Kd > 0)
-		{
-				Wifi_Connecting = 0;
-
-		}
-	}
 
 		Menu_type = Main_menu;
 		lcd_clear();

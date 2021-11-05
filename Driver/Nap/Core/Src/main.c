@@ -54,7 +54,8 @@
 #define Ki_amount 					 0.01f
 #define Kd_amount 					 0.01f
 
-
+/* Receive Buffer Size -------------------------------------------------------*/
+#define Receive_Buffer_Size				20
 
 /* USER CODE END PD */
 
@@ -106,7 +107,7 @@ float Kp = 0, Ki = 0, Kd = 0;
 char string_2[1];
 char PID_Rx[12];
 char kp_val[10], ki_val[10], kd_val[10];
-char Rx_Buffer[18],Rx_Buffer_copied[17];
+char Rx_Buffer[Receive_Buffer_Size],Rx_Buffer_copied[Receive_Buffer_Size];
 extern char Rx_Buff[19];
 PIDController Car = {0,0,0,0,-400,400};
 /* USER CODE END PV */
@@ -140,7 +141,7 @@ static int Constraint (int Present_Value,int Min,int Max);
 PUTCHAR_PROTOTYPE {
 	/* Place your implementation of fputc here */
 	/* e.g. write a character to the USART2 and Loop until the end of transmission */
-	HAL_UART_Transmit(&huart6, (uint8_t*) &ch, 1, 0xFFFF);
+	HAL_UART_Transmit(&huart1, (uint8_t*) &ch, 1, 0xFFFF);
 	return ch;
 }
 
@@ -156,6 +157,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 //	            printf("%c,",Rx_Buffer[i]);
 //
 //	    }
+
 	strcpy(Rx_Buffer_copied,Rx_Buffer);
 	char *KpinString = strtok(Rx_Buffer_copied," ");
 	char *KiinString = strtok(NULL," ");
@@ -165,7 +167,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	Kd = strtof(KdinString,NULL);
 	memset(Rx_Buffer_copied,0,sizeof(Rx_Buffer_copied));
 	memset(Rx_Buffer,0,sizeof(Rx_Buffer));
-	HAL_UART_Receive_IT(&huart6, Rx_Buffer, 18);
+	HAL_UART_Receive_IT(&huart6, Rx_Buffer, Receive_Buffer_Size);
 
 }
 /* USER CODE END 0 */
@@ -213,7 +215,7 @@ int main(void)
   MotorL_EnablePWM();
   MotorR_EnablePWM();
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &Sensor_ADC_Value, 6);
-  HAL_UART_Receive_IT(&huart6, Rx_Buffer, 18);
+  HAL_UART_Receive_IT(&huart6, Rx_Buffer, Receive_Buffer_Size);
   /*Enable for encoder reading*/
 //  HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_ALL);
 //  HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL);
@@ -792,6 +794,12 @@ void Running(void) // Activate the car for running
 }
 static int Error_Return (uint8_t Sensor_Array){
 	switch(Sensor_Array){
+	case 0b00111100:
+		return 10000;
+		break;
+	case 0b00011100:
+		return 10000;
+		break;
 	case 0b00000100:
 		return 8500;
 		break;
@@ -799,32 +807,24 @@ static int Error_Return (uint8_t Sensor_Array){
 		return 7500;
 		break;
 
-	case 0b00011100:
-		return 6500;
-		break;
-
 	case 0b00011000:
 		return 5500;
 		break;
 
-	case 0b00111000:
+	case 0b00010000:
 		return 4500;
 		break;
 
-	case 0b00110000:
+	case 0b00000000:
 		return 3500;
 		break;
 
-	case 0b01110000:
+	case 0b00100000:
 		return 2500;
 		break;
 
 	case 0b01100000:
 		return 1500;
-		break;
-
-	case 0b11100000:
-		return 500;
 		break;
 
 	case 0b11000000:
@@ -834,8 +834,12 @@ static int Error_Return (uint8_t Sensor_Array){
 	case 0b10000000:
 		return -4500;
 		break;
-	case 0b11111111:
+	case 0b11100000:
 		return -5500;
+		break;
+	case 0b11110000:
+		return -5500;
+		break;
 	default:
 		break;
 	}
