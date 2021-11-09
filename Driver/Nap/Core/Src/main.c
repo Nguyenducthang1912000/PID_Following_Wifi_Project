@@ -55,8 +55,8 @@
 #define Kd_amount 					 0.01f
 
 /* Receive Buffer Size -------------------------------------------------------*/
-#define Receive_Buffer_Size				20
-
+#define Receive_Buffer_Size				22
+#define PID_message						1
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -99,6 +99,7 @@ int8_t First_point = 0,Last_point = 0;
 int16_t Left = 6999, Right = 7200;
 uint16_t Sensor_Threshold[] = { 3900, 3900, 3900, 4000, 4000, 4000 };
 uint16_t Sensor_ADC_Value[6];
+int ID;
 //uint32_t counterLeft = 0,counterRight = 0;
 //int16_t countLeft = 0, countRight = 0;
 int Motor_Speed_L,Motor_Speed_R;
@@ -147,24 +148,21 @@ PUTCHAR_PROTOTYPE {
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-//	for (int i = 0; i < sizeof(Rx_Buffer); i++)
-//	    {
-//	        if (i == sizeof(Rx_Buffer) - 1)
-//	        {
-//	            printf("%cend\n",Rx_Buffer[i]);
-//	        }
-//	        else
-//	            printf("%c,",Rx_Buffer[i]);
-//
-//	    }
+	float Kp_pre,Ki_pre,Kd_pre;
 
 	strcpy(Rx_Buffer_copied,Rx_Buffer);
-	char *KpinString = strtok(Rx_Buffer_copied," ");
-	char *KiinString = strtok(NULL," ");
-	char *KdinString = strtok(NULL,"");
-	Kp = strtof(KpinString,NULL);
-	Ki = strtof(KiinString,NULL);
-	Kd = strtof(KdinString,NULL);
+	char *ID_number  = strtok(Rx_Buffer_copied," ");
+	ID = strtod(ID_number,NULL);
+	if(ID == PID_message)
+	{
+	char *Data1 = strtok(NULL," ");
+	char *Data2 = strtok(NULL," ");
+	char *Data3 = strtok(NULL,"");
+	Kp = strtof(Data1,NULL);
+	Ki = strtof(Data2,NULL);
+	Kd = strtof(Data3,NULL);
+	printf("%6.2f,%6.2f,%6.2f\n",Kp,Ki,Kd);
+	}
 	memset(Rx_Buffer_copied,0,sizeof(Rx_Buffer_copied));
 	memset(Rx_Buffer,0,sizeof(Rx_Buffer));
 	HAL_UART_Receive_IT(&huart6, Rx_Buffer, Receive_Buffer_Size);
@@ -693,7 +691,7 @@ static void MX_USART6_UART_Init(void)
 
   /* USER CODE END USART6_Init 1 */
   huart6.Instance = USART6;
-  huart6.Init.BaudRate = 115200;
+  huart6.Init.BaudRate = 9600;
   huart6.Init.WordLength = UART_WORDLENGTH_8B;
   huart6.Init.StopBits = UART_STOPBITS_1;
   huart6.Init.Parity = UART_PARITY_NONE;

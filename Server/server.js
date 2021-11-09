@@ -18,12 +18,21 @@ const port_Listen = 3000;
 server.listen(port_Listen);
 io.on("connection", function (socket) {
     console.log("Server: Client connected: " + socket.id);
-    // socket.emit("data-server-to-esp", "haha");
-    socket.on("web-send-data", function (data) {
-        console.log(data)
+
+    socket.on("PID_value_ready", function (data) {
+        console.log(data);
         socket.emit("server-received");
-        io.sockets.emit("data-server-to-esp", data);
-        // io.sockets.emit("data-server-to-esp", data);
+        io.sockets.emit("PID_value", data);
+    });
+
+    socket.on("State_value_ready", function (data) {
+        console.log(data);
+        io.sockets.emit("Car_State", data);
+    });
+
+    socket.on("Matrix", function (data) {
+        console.log(data);
+        io.sockets.emit("First_Last", data);
     });
 });
 

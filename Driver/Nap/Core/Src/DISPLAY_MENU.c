@@ -67,7 +67,7 @@ void Running(void);
 /* Function declaration ----------------------------------------------------*/
 void Menu_system_control(uint8_t Menu_type, uint8_t line) {
 	switch (Menu_type) {
-	case 0:
+	case Running_Process:
 		Running();
 		break;
 	case Main_menu:
@@ -93,6 +93,7 @@ void Menu_system_control(uint8_t Menu_type, uint8_t line) {
 		break;
 	case Path_show_menu:
 		Path_show();
+		break;
 	}
 }
 
