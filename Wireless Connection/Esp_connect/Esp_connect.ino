@@ -12,6 +12,8 @@
 #define Ki_Buffer_Size 7
 #define Kd_Buffer_Size 6
 #define ID_Buffer_Size 2
+#define First_string_Size   3
+#define Last_string_Size    3    
 /*  Formula for Buffer --------------------------------------------*/
 // Cach tinh Send_Buffer_Size = ID_Buffer_Size + Kp_Buffer_Size + Ki_Buffer_Size + Kd_Buffer_Size - 4
 // Cach tinh Buffer cho tung Kp,Ki,Kd => size thuc + gia tri \0 (+1)
@@ -26,7 +28,7 @@ SocketIoClient webSocket;
 SoftwareSerial ss(14,5);
 
 /*  Private variable declaration ----------------------------------*/
-const char* Host_Socket = "192.168.137.1";
+const char* Host_Socket = "192.168.1.234";
 unsigned int Port_Socket = 3000;
 float P,I,D;
 int State,First,Last;
@@ -36,7 +38,7 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   ss.begin(9600);
-  WiFi.begin("thang_wifi", "thangpro113");
+  WiFi.begin("Nguyen Duc Tam ", "ductammdf1059");
   while(WiFi.status() != WL_CONNECTED)
   {
   delay(10);
@@ -145,7 +147,41 @@ void State_String_compression(int State){
   memset(Final_string,0,sizeof(Final_string));
   sprintf(ID_string,"%d ",Car_State_Message_ID);
   sprintf(State_string,"%d ",State);
+  for(int i = 0;i < ID_Buffer_Size ;i++)
+  {
+    Final_string[i] = ID_string[i]; 
+  }
+  for(int i = 0;i < ID_Buffer_Size ;i++)
+  {
+    Final_string[i + ID_Buffer_Size] = State_string[i];
+  }
+  for(int i = 0;i < (Send_Buffer_Size - ID_Buffer_Size - ID_Buffer_Size); i++)
+  {
+    Final_string[i + ID_Buffer_Size + ID_Buffer_Size] = '0';
+  }
+  ss.write(Final_string,Send_Buffer_Size);
 }
 void Matrix_String_compression(int First,int Last){
-  
+  char ID_string[ID_Buffer_Size+1],First_string[First_string_Size+1],Last_string[Last_string_Size+1],Final_string[Send_Buffer_Size];
+  memset(Final_string,0,sizeof(Final_string));
+  sprintf(ID_string,"%d ",First_Last_Message_ID);
+  sprintf(First_string,"%2d ",First);
+  sprintf(Last_string,"%2d ",Last);
+  for(int i = 0;i < ID_Buffer_Size; i++)
+  {
+     Final_string[i] = ID_string[i];   
+  }
+  for(int i = 0;i < First_string_Size; i++)
+  {
+     Final_string[i + ID_Buffer_Size] = First_string[i];
+  }
+  for(int i = 0;i < Last_string_Size; i++)
+  {
+     Final_string[i + ID_Buffer_Size + First_string_Size] = Last_string[i];
+  }
+  for(int i = 0;i < (Send_Buffer_Size - ID_Buffer_Size - First_string_Size - Last_string_Size); i++)
+  {
+     Final_string[i + ID_Buffer_Size + First_string_Size + Last_string_Size] = '0';
+  }
+  ss.write(Final_string,Send_Buffer_Size);
 }

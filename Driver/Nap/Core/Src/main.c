@@ -56,13 +56,19 @@
 
 /* Receive Buffer Size -------------------------------------------------------*/
 #define Receive_Buffer_Size				22
-#define PID_message						1
+#define PID_message_ID					1
+#define STS_message_ID					2
+#define FIRST_LAST_message_ID			3
+
+/* Sensor position -----------------------------------------------------------*/
+
+	/*		0			1			2			3			4			5		*/
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define sbi(Reg, Bit) (Reg |= (1<<Bit))
-#define cbi(Reg, Bit) (Reg &= ~(1<<Bit))
+#define sbi(Reg, Bit) (Reg |= (1<<Bit))					//set bit macro
+#define cbi(Reg, Bit) (Reg &= ~(1<<Bit))				//clear bit macro
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -83,20 +89,15 @@ UART_HandleTypeDef huart6;
 
 /* USER CODE BEGIN PV */
 
-extern uint8_t menu_display;
-extern uint8_t Menu_type;
-extern uint8_t line;
-extern uint8_t Color_Read;
-extern uint8_t Wifi_Connecting;
 uint8_t LineDetect = 0;
 volatile uint8_t stateBTNC = 1;
-uint8_t cancer_menu = 1;
-uint8_t cancer_running = 1;
+uint8_t cancel_menu = 1;
+uint8_t cancel_running = 1;
 uint8_t Kp_modify_flag = 0, Ki_modify_flag = 0, Kd_modify_flag = 0;
 uint8_t Left_modify_flag = 0, Right_modify_flag = 0;
 uint8_t First_point_modify_flag = 0, Last_point_modify_flag = 0;
 int8_t First_point = 0,Last_point = 0;
-int16_t Left = 6999, Right = 7200;
+int16_t Left = 4000, Right = 4200;
 uint16_t Sensor_Threshold[] = { 3900, 3900, 3900, 4000, 4000, 4000 };
 uint16_t Sensor_ADC_Value[6];
 int ID;
@@ -128,8 +129,8 @@ static void MX_SPI2_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 static void SelectItem(void);
-void Sensor_Convert_A2D(void);
-void Sensor_Print_LineDetect();
+static void Sensor_Convert_A2D(void);
+static void Sensor_Print_LineDetect();
 static void MultifunctionButton(void);
 static void ScrollUp(void);
 static void ReadFlash(void);
@@ -153,15 +154,30 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	strcpy(Rx_Buffer_copied,Rx_Buffer);
 	char *ID_number  = strtok(Rx_Buffer_copied," ");
 	ID = strtod(ID_number,NULL);
-	if(ID == PID_message)
+	if(ID == PID_message_ID)
 	{
-	char *Data1 = strtok(NULL," ");
-	char *Data2 = strtok(NULL," ");
-	char *Data3 = strtok(NULL,"");
-	Kp = strtof(Data1,NULL);
-	Ki = strtof(Data2,NULL);
-	Kd = strtof(Data3,NULL);
-	printf("%6.2f,%6.2f,%6.2f\n",Kp,Ki,Kd);
+		char *Data1 = strtok(NULL," ");
+		char *Data2 = strtok(NULL," ");
+		char *Data3 = strtok(NULL,"");
+		Kp = strtof(Data1,NULL);
+		Ki = strtof(Data2,NULL);
+		Kd = strtof(Data3,NULL);
+		printf("%6.2f,%6.2f,%6.2f\n",Kp,Ki,Kd);
+	}
+	else if(ID == STS_message_ID)
+	{
+		char *Data1 = strtok(NULL," ");
+
+	}
+	else if(ID == FIRST_LAST_message_ID)
+	{
+		char *Data1 = strtok(NULL," ");
+		char *Data2 = strtok(NULL," ");
+
+	}
+	else
+	{
+		/*Do nothing*/
 	}
 	memset(Rx_Buffer_copied,0,sizeof(Rx_Buffer_copied));
 	memset(Rx_Buffer,0,sizeof(Rx_Buffer));
@@ -773,8 +789,8 @@ void Running(void) // Activate the car for running
 	lcd_send_cmd(0x80 | 0x00);
 	lcd_send_string("Car is Running!        ");
 	lcd_send_cmd(0x80 | 0x40);
-	lcd_send_string("Press C for cancer     ");
-	while (cancer_running) {
+	lcd_send_string("Press C for cancel     ");
+	while (cancel_running) {
 	Sensor_Convert_A2D();
 	int16_t PID_val = Line_Follower_PID(3500,Error_Return(LineDetect), &Car);
 	Motor_Speed_R = (Right + PID_val);
@@ -796,6 +812,12 @@ static int Error_Return (uint8_t Sensor_Array){
 		return 10000;
 		break;
 	case 0b00011100:
+		return 10000;
+		break;
+	case 0b10111100:
+		return 10000;
+		break;
+	case 0b10011100:
 		return 10000;
 		break;
 	case 0b00000100:
@@ -852,7 +874,7 @@ static int Constraint (int Present_Value,int Min,int Max){
 	else
 		return Present_Value;
 }
-void Sensor_Convert_A2D()
+static void Sensor_Convert_A2D()
 {
 	LineDetect = 0;
 	for (int i = 0; i < 6; ++i)
@@ -880,7 +902,7 @@ void Sensor_PrintValue(void)
 	printf("\n");
 
 }
-void Sensor_Print_LineDetect()
+static void Sensor_Print_LineDetect()
 {
 		char buffer[6];
 		itoa (LineDetect,buffer,2);
@@ -1005,7 +1027,7 @@ void MultifunctionButton(void)
 	case Running_menu:
 		Menu_type = Main_menu;
 		line = 1;
-		cancer_running = 0;
+		cancel_running = 0;
 		break;
 	case Main_menu:
 		line++;
@@ -1066,7 +1088,7 @@ void MultifunctionButton(void)
 	case LineDetect_Show:
 		Menu_type = Main_menu;
 		line = 1;
-		cancer_menu = 0;
+		cancel_menu = 0;
 		break;
 
 	case Color_Processing:

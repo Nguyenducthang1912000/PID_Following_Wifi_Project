@@ -1,0 +1,34 @@
+/*
+ * Menu.h
+ *
+ *  Created on: May 6, 2021
+ *      Author: DucThang
+ */
+#pragma once
+#include "main.h"
+#include "HAL_I2C_LCD.h"
+#include "stdio.h"
+#include "string.h"
+void executeAction(uint8_t line);
+void Menu_system_control(uint8_t Menu_type,uint8_t line);
+#ifndef SRC_MENU_H_
+#define SRC_MENU_H_
+/* Value modify flag --------------------------------------------------------*/
+extern uint8_t Kp_modify_flag, Ki_modify_flag, Kd_modify_flag;
+extern uint8_t Left_modify_flag, Right_modify_flag;
+extern uint8_t First_point_modify_flag, Last_point_modify_flag;
+/* Exit menu showing process ------------------------------------------------*/
+extern uint8_t cancer_menu;
+
+
+/* Exit running process -----------------------------------------------------*/
+extern uint8_t cancer_running;
+
+/* System private value -----------------------------------------------------*/
+extern float Kp, Ki, Kd;
+extern int8_t First_point,Last_point;
+
+
+
+
+#endif /* SRC_MENU_H_ */

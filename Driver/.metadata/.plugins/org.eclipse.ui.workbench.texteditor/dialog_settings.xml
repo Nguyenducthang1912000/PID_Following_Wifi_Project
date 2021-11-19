@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="menu_display"/>
+		<item key="selection" value="cancel"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="cancer"/>
+			<item value="Kp_modify_flag"/>
+			<item value="Sensor_ADC_Value"/>
+			<item value="uint16_t"/>
 			<item value="menu_display"/>
 			<item value="Running_menu"/>
 			<item value="Running_Process"/>
@@ -19,15 +23,14 @@
 			<item value="Left_str"/>
 			<item value="string_2"/>
 			<item value="Line_Follower_PID"/>
-			<item value="Line detect"/>
-			<item value="Line"/>
 		</list>
 		<list key="replacehistory">
+			<item value="cancel"/>
 			<item value="Path_solver_menu"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item key="DIALOG_X_ORIGIN" value="1347"/>
+		<item key="DIALOG_X_ORIGIN" value="593"/>
 		<item key="DIALOG_Y_ORIGIN" value="246"/>
 		<item key="DIALOG_WIDTH" value="336"/>
 		<item key="DIALOG_HEIGHT" value="454"/>

@@ -57,7 +57,11 @@ extern UART_HandleTypeDef huart6;
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+extern uint8_t menu_display;
+extern uint8_t Menu_type;
+extern uint8_t line;
+extern uint8_t Color_Read;
+extern uint8_t Wifi_Connecting;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
