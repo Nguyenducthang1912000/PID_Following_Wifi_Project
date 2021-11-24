@@ -1,6 +1,2 @@
-PID.c:15:5:RPM_Convert_PWM_L	24	static
-PID.c:26:5:RPM_Convert_PWM_R	24	static
-PID.c:36:9:Line_Follower_PID	24	static
-PID.c:45:6:PIDController_Car_Init	16	static
-PID.c:51:6:PIDController_L_Init	16	static
-PID.c:59:6:PIDController_R_Init	16	static
+PID.c:39:9:Line_Follower_PID	24	static
+PID.c:48:6:PIDController_Car_Init	16	static

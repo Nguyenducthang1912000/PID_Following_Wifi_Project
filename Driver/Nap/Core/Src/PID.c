@@ -6,12 +6,14 @@
  */
 #include "PID.h"
 #include "main.h"
+#define PID_POSITION
 //P: ti le , I: tich phan , D: dao ham,vi phan
 float adder_L,adder_R;
 int PWM_Output_L,PWM_Output_R;
 float Error_L,Error_R;
 int16_t PID_val;
 //PID for left engine
+#ifndef PID_POSITION
 int RPM_Convert_PWM_L (int16_t RPM_L,float EncoderRead_L,PIDController *pid_L){
 	HAL_Delay(2);
 	Error_L = RPM_L - EncoderRead_L;
@@ -33,6 +35,7 @@ int RPM_Convert_PWM_R (int16_t RPM_R,float EncoderRead_R,PIDController *pid_R){
 	PWM_Output_R = RPM_R*7200/388 + adder_R;
 	return PWM_Output_R;
 }
+#endif
 int16_t Line_Follower_PID (int Setpoint , int Error,PIDController *Car)
 {
 	Car->propotional = Setpoint - Error;
@@ -48,6 +51,7 @@ void PIDController_Car_Init (PIDController *Car){
 	Car->previous_error = 0.0f;
 	Car->adder_out = 0.0f;
 }
+#ifndef PID_POSITION
 void PIDController_L_Init (PIDController *pid_L)
 {
 	/*Clear controller variables*/
@@ -64,3 +68,4 @@ void PIDController_R_Init (PIDController *pid_R)
 	pid_R->previous_error = 0.0f;
 	pid_R->adder_out = 0.0f;
 }
+#endif

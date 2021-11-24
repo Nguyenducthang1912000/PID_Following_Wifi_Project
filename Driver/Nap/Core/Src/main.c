@@ -63,6 +63,7 @@
 #define DATA_LEFT_REQ					5U
 #define DATA_RIGHT_REQ					6U
 #define DATA_PID_REQ					7U
+#define DATA_BOOT_REQ					8U
 
 /* Car State -----------------------------------------------------------------*/
 #define CAR_IS_RUNNING					1U
@@ -238,6 +239,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 //		  strcat(Final_string,Kp_string);
 //		  strcat(Final_string,Ki_string);
 //		  strcat(Final_string,Kd_string);
+	}
+	else if(ID == DATA_BOOT_REQ)
+	{
+		char Boot[1] = "1";
+		HAL_UART_Transmit(&huart6, Boot, sizeof(Boot), 1000);
 	}
 	memset(Rx_Buffer_copied,0,sizeof(Rx_Buffer_copied));
 	memset(Rx_Buffer,0,sizeof(Rx_Buffer));
@@ -940,29 +946,17 @@ void Running(void) // Activate the car for running
 	MotorR_SetPWM(0);
 	lcd_clear();
 }
-int Check_Noise()
+void Left_Turn()
 {
-	int prev_line_read,return_val;
-	for(int i=0 ; i<300 ; i++){
-		Sensor_Convert_A2D();
-		MotorL_SetPWM(3000);
-		MotorR_SetPWM(3200);
-		if((LineDetect & 0b10000000) == 0b10000000)
-		{
-		prev_line_read = LineDetect;
-		}
-		else
-		{
-			switch(prev_line_read)
-			{
-			case 0b11111111:
-				return_val = 3500;
-				break;
-			}
-			break;
-		}
-	}
-	return return_val;
+
+}
+void Right_Turn()
+{
+
+}
+void Turn_180_Deg()
+{
+
 }
 static int Error_Return (uint8_t Sensor_Array){
 	switch(Sensor_Array){
@@ -1010,11 +1004,9 @@ static int Error_Return (uint8_t Sensor_Array){
 		break;
 
 	case 0b11000000:
-		Check_Noise();
 		break;
 
 	case 0b10000000:
-		Check_Noise();
 		break;
 
 	default:

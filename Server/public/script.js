@@ -13,6 +13,10 @@ $(document).ready(function () {
     socket.on("Right_Eng_received", function (data) {
         document.getElementById("Right_Eng_display").value = data;
     });
+    socket.on("Bootup", function () {
+        document.getElementById("BTN_Stop").value = "Car Run";
+        document.getElementById("BTN_Stop").innerHTML = "Car Run";
+    })
     $("#BTN_Submit").click(function () {
         var Kp = parseFloat(document.getElementById("PID_P").value);
         var Ki = parseFloat(document.getElementById("PID_I").value);

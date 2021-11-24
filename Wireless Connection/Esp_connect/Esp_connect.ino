@@ -34,12 +34,15 @@
 #define Car_State_Message_ID 2
 #define First_Last_Message_ID 3
 
+/*  STM32 Bootup --------------------------------------------------*/
+#define STM32_BOOTUP        1U
+#define STM32_SHUTDOWN      0U
 /*  Library variable declaration ----------------------------------*/
 SocketIoClient webSocket;
 SoftwareSerial ss(14,5);
 
 /*  Private variable declaration ----------------------------------*/
-const char* Host_Socket = "192.168.1.31";
+const char* Host_Socket = "192.168.1.234";
 unsigned int Port_Socket = 3000;
 float P,I,D;
 uint8_t State,First,Last;
@@ -48,8 +51,9 @@ uint8_t Number_of_data = REQ_STM_ERROR;
 /*  Setup ---------------------------------------------------------*/
 int beginTime = 0;
 int endTime = 0;
-uint8_t Read_Flag = DATA_SEND_REQ_EN;
+uint8_t Read_Flag = DATA_SEND_REQ_DIS;
 uint8_t Read_PID = DATA_SEND_PID_EN;
+uint8_t Boot = STM32_SHUTDOWN;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -67,42 +71,45 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly
-//  if(Read_PID == DATA_SEND_PID_EN){
-//    if (endTime - beginTime > 20) {
-//      char Req_signal_str[22];
-//      String data = "";
-///*  Request for ERROR from STM32 ------------------------------------------*/
-//      sprintf(Req_signal_str,"7 ");
-//      for(int i=0; i<20; i++)
-//      {
-//        Req_signal_str[i+2] = '0';
-//      }
-//      ss.write(Req_signal_str,22);
-//      delay(20);
-//      beginTime = millis();
-//    }
-//    if (ss.available()>0)
-//    {
-//      String data = "";
-//      int beginTimeSS, endTimeSS = millis();
-//      while (ss.available()>0){
-//        char temp = ss.read();
-//        data = data + temp;
-//        delay(10);
-//      }
-//      int len=1;
-//      while (data[len] != NULL){
-//        len++;
-//      }
-//      char str[len+1];
-//      data.toCharArray(str, len+1);
-//      Serial.print(str);
-//      webSocket.emit("PID_param", str);
-//      Read_PID = DATA_SEND_PID_DIS;
-//    }
-//    delay(100);
-//  }
+//   put your main code here, to run repeatedly
+  if(Boot == STM32_SHUTDOWN)
+  {
+    if (endTime - beginTime > 20) {
+      char Req_signal_str[22];
+      String data = "";
+/*  Request for ERROR from STM32 ------------------------------------------*/
+      sprintf(Req_signal_str,"8 ");
+      for(int i=0; i<20; i++)
+      {
+        Req_signal_str[i+2] = '0';
+      }
+      ss.write(Req_signal_str,22);
+      delay(20);
+      beginTime = millis();
+    }
+    
+    if (ss.available()>0){
+      String data = "";
+      int beginTimeSS, endTimeSS = millis();
+      while (ss.available()>0){
+        char temp = ss.read();
+        data = data + temp;
+        delay(10);
+      }
+      int len=1;
+      while (data[len] != NULL){
+        len++;
+      }
+      char str[len+1];
+      data.toCharArray(str, len+1);
+      Serial.print(str);
+      webSocket.emit("STM32_BOOTUP", str);
+      /*  Send STM32 bootup state -----------------------------------------*/
+      Read_Flag = DATA_SEND_REQ_EN;
+      Boot = STM32_BOOTUP;
+    }
+  }
+  
   if(Read_Flag == DATA_SEND_REQ_EN){
 /*	Data being read every 50ms --------------------------------------------*/
     if (endTime - beginTime > 100) {

@@ -35,16 +35,23 @@ io.on("connection", function (socket) {
         io.sockets.emit("First_Last", data);
     });
     socket.on("Error_number", function (data) {
+        console.log(data);
         io.sockets.emit("Error_number_received", data); // io truyen cho tat ca cac thang dang lang nghe
     });
-    socket.on("Left_Eng", function (data) {
+    socket.on("Left_Eng", function (data) { // Su kien cho toc do dong co trai
+        console.log(data);
         io.sockets.emit("Left_Eng_received", data);
     });
-    socket.on("Right_Eng", function (data) {
+    socket.on("Right_Eng", function (data) {    // Su kien cho toc do dong co phai
+        console.log(data);
         io.sockets.emit("Right_Eng_received", data);
     });
-    socket.on("PID_param", function (data) {
+    socket.on("PID_param", function (data) {   //Su kien cho thông số PID ban đầu khi có nguồn điện 
         console.log(data);
+    });
+    socket.on("STM32_BOOTUP", function (data) {         //Sự kiện khi cả STM32 và ESP bootup lần đầu khi có nguồn điện 
+        console.log(data);
+        io.sockets.emit("Bootup");
     });
 });
 
