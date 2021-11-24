@@ -77,7 +77,7 @@
 #define Send_Buffer_Size 22
 #define Kp_Buffer_Size 7
 #define Ki_Buffer_Size 7
-#define Kd_Buffer_Size 7
+#define Kd_Buffer_Size 6
 /* Sensor position -----------------------------------------------------------*/
 
 	/*		0			1			2			3			4			5		*/
@@ -131,7 +131,7 @@ volatile short rateLeft_prv = 0, rateRight_prv = 0;
 
 
 const long interval = 300;
-uint8_t ID;
+int ID;
 int Motor_Speed_L,Motor_Speed_R;
 int Speed_Left = 0, Speed_Right = 0;
 int Check_line = 0;
@@ -230,15 +230,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
 	else if(ID == DATA_PID_REQ)
 	{
-	  char Kp_string[Kp_Buffer_Size+1],Ki_string[Ki_Buffer_Size+1],Kd_string[Kd_Buffer_Size+1],Final_string[Send_Buffer_Size];
-	  memset(Final_string,0,sizeof(Final_string));
-	  sprintf(Kp_string,"%06.2f ",Kp);
-	  sprintf(Ki_string,"%06.2f ",Ki);
-	  sprintf(Kd_string,"%06.2f\"",Kd);
-	  strcat(Final_string,Kp_string);
-	  strcat(Final_string,Ki_string);
-	  strcat(Final_string,Kd_string);
-	  HAL_UART_Transmit(&huart6, Final_string, sizeof(Final_string), 10000);
+
+//		  char Kp_string[Kp_Buffer_Size+1],Ki_string[Ki_Buffer_Size+1],Kd_string[Kd_Buffer_Size+1],Final_string[Send_Buffer_Size];
+//		  memset(Final_string,0,sizeof(Final_string));
+//		  sprintf(Kp_string,"%06.2f ",Kp);
+//		  sprintf(Ki_string,"%06.2f ",Ki);
+//		  sprintf(Kd_string,"%06.2f",Kd);
+//		  strcat(Final_string,Kp_string);
+//		  strcat(Final_string,Ki_string);
+//		  strcat(Final_string,Kd_string);
 	}
 	else if(ID == DATA_BOOT_REQ)
 	{

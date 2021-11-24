@@ -77,7 +77,7 @@
 #define Send_Buffer_Size 22
 #define Kp_Buffer_Size 7
 #define Ki_Buffer_Size 7
-#define Kd_Buffer_Size 7
+#define Kd_Buffer_Size 6
 /* Sensor position -----------------------------------------------------------*/
 
 	/*		0			1			2			3			4			5		*/
@@ -234,7 +234,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	  memset(Final_string,0,sizeof(Final_string));
 	  sprintf(Kp_string,"%06.2f ",Kp);
 	  sprintf(Ki_string,"%06.2f ",Ki);
-	  sprintf(Kd_string,"%06.2f\"",Kd);
+	  sprintf(Kd_string,"%06.2f",Kd);
 	  strcat(Final_string,Kp_string);
 	  strcat(Final_string,Ki_string);
 	  strcat(Final_string,Kd_string);
