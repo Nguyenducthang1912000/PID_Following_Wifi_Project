@@ -74,7 +74,7 @@ void loop() {
 //   put your main code here, to run repeatedly
   if(Boot == STM32_SHUTDOWN)
   {
-    if (endTime - beginTime > 20) {
+    if (endTime - beginTime > 1) {
       char Req_signal_str[22];
       String data = "";
 /*  Request for ERROR from STM32 ------------------------------------------*/
