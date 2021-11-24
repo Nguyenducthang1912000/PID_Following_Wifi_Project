@@ -42,10 +42,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-//extern int16_t countLeft, countRight;
-//int16_t old_countLeft = 0,old_countRight = 0;
-//extern int Speed_Left, Speed_Right;
-//int indx = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -55,6 +51,12 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+extern int positionLeft,positionRight;
+int16_t oldposLeft = 0,oldposRight = 0;
+extern int Speed_Left,Speed_Right;
+
+extern int16_t countLeft, countRight;
+
 extern void Uart_isr (UART_HandleTypeDef *huart);
 
 /* USER CODE END 0 */
@@ -197,12 +199,22 @@ void SysTick_Handler(void)
 //	if(indx == 1000){
 //		Speed_Left = ((countLeft - old_countLeft)/11);
 //		Speed_Right = ((countRight - old_countRight)/11);
+//		if(Speed_Left > 5000 || Speed_Left < -5000)
+//		{
+//			Speed_Left = Speed_Left_prev;
+//		}
+//		else if (Speed_Right > 5000 || Speed_Right < -5000)
+//		{
+//			Speed_Right = Speed_Right_prev;
+//		}
+//		Speed_Left_prev = Speed_Left;
+//		Speed_Right_prev = Speed_Right;
 //		old_countLeft = countLeft;
 //		old_countRight = countRight;
 //		indx = 0;
 //	}
   /* USER CODE END SysTick_IRQn 0 */
-  HAL_IncTick();
+	HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
   /* USER CODE END SysTick_IRQn 1 */

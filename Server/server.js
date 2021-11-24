@@ -34,6 +34,18 @@ io.on("connection", function (socket) {
         console.log(data);
         io.sockets.emit("First_Last", data);
     });
+    socket.on("Error_number", function (data) {
+        io.sockets.emit("Error_number_received", data); // io truyen cho tat ca cac thang dang lang nghe
+    });
+    socket.on("Left_Eng", function (data) {
+        io.sockets.emit("Left_Eng_received", data);
+    });
+    socket.on("Right_Eng", function (data) {
+        io.sockets.emit("Right_Eng_received", data);
+    });
+    socket.on("PID_param", function (data) {
+        console.log(data);
+    });
 });
 
 app.get("/", function (req, res) {

@@ -1,37 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="cancel"/>
+		<item key="selection" value="string_2"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
-			<item value="cancer"/>
-			<item value="Kp_modify_flag"/>
-			<item value="Sensor_ADC_Value"/>
-			<item value="uint16_t"/>
-			<item value="menu_display"/>
-			<item value="Running_menu"/>
-			<item value="Running_Process"/>
-			<item value="kp_val"/>
-			<item value="Path_solver"/>
-			<item value="Last_point_modify_flag"/>
-			<item value="Saving_process"/>
-			<item value="buffer"/>
-			<item value="Left_str"/>
 			<item value="string_2"/>
-			<item value="Line_Follower_PID"/>
+			<item value="Rx_Buff"/>
+			<item value="Receive_Buffer_Size"/>
+			<item value="DATA_Trans_Enable"/>
+			<item value="DATA_Trans_Disable"/>
+			<item value="PID_message_ID"/>
+			<item value="ID_PID_MESS"/>
+			<item value="STS_message_ID"/>
+			<item value="ID_STATUS_MESS"/>
+			<item value="FIRST_LAST_message_ID"/>
+			<item value="ESP_DATA_REQ"/>
+			<item value="LEFT_DATA_REQ"/>
+			<item value="DATA_LEFT_REQ"/>
+			<item value="RIGHT_DATA_REQ"/>
+			<item value="HAL_TIM_IC_CaptureCallback"/>
 		</list>
 		<list key="replacehistory">
+			<item value="RECEIVE_BUFF_SIZE"/>
+			<item value="DATA_TRANS_EN"/>
+			<item value="DATA_TRANS_DIS"/>
+			<item value="ID_PID_MESS"/>
+			<item value=""/>
+			<item value="ID_STATUS_MESS"/>
+			<item value="ID_FIRST_LAST_MESS"/>
+			<item value="DATA_ERROR_REQ"/>
+			<item value="DATA_LEFT_REQ"/>
+			<item value="DATA_RIGHT_REQ"/>
 			<item value="cancel"/>
 			<item value="Path_solver_menu"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item key="DIALOG_X_ORIGIN" value="593"/>
-		<item key="DIALOG_Y_ORIGIN" value="246"/>
+		<item key="DIALOG_X_ORIGIN" value="1073"/>
+		<item key="DIALOG_Y_ORIGIN" value="306"/>
 		<item key="DIALOG_WIDTH" value="336"/>
 		<item key="DIALOG_HEIGHT" value="454"/>
 		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-15|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>

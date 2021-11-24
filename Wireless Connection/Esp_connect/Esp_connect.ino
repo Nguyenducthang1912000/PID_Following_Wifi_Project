@@ -14,6 +14,17 @@
 #define ID_Buffer_Size 2
 #define First_string_Size   3
 #define Last_string_Size    3    
+
+/*  Number of message ---------------------------------------------*/
+#define REQ_STM_ERROR       0U
+#define REQ_STM_LEFT        1U
+#define REQ_STM_RIGHT       2U
+#define REQ_STM_PID         3U
+/*	Flags ---------------------------------------------------------*/
+#define	DATA_SEND_REQ_DIS		0U
+#define DATA_SEND_REQ_EN		1U
+#define DATA_SEND_PID_DIS		0U
+#define DATA_SEND_PID_EN		1U
 /*  Formula for Buffer --------------------------------------------*/
 // Cach tinh Send_Buffer_Size = ID_Buffer_Size + Kp_Buffer_Size + Ki_Buffer_Size + Kd_Buffer_Size - 4
 // Cach tinh Buffer cho tung Kp,Ki,Kd => size thuc + gia tri \0 (+1)
@@ -28,12 +39,17 @@ SocketIoClient webSocket;
 SoftwareSerial ss(14,5);
 
 /*  Private variable declaration ----------------------------------*/
-const char* Host_Socket = "192.168.1.234";
+const char* Host_Socket = "192.168.1.31";
 unsigned int Port_Socket = 3000;
 float P,I,D;
-int State,First,Last;
+uint8_t State,First,Last;
 String Final_string_2;
+uint8_t Number_of_data = REQ_STM_ERROR;
 /*  Setup ---------------------------------------------------------*/
+int beginTime = 0;
+int endTime = 0;
+uint8_t Read_Flag = DATA_SEND_REQ_EN;
+uint8_t Read_PID = DATA_SEND_PID_EN;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -52,6 +68,120 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly
+//  if(Read_PID == DATA_SEND_PID_EN){
+//    if (endTime - beginTime > 20) {
+//      char Req_signal_str[22];
+//      String data = "";
+///*  Request for ERROR from STM32 ------------------------------------------*/
+//      sprintf(Req_signal_str,"7 ");
+//      for(int i=0; i<20; i++)
+//      {
+//        Req_signal_str[i+2] = '0';
+//      }
+//      ss.write(Req_signal_str,22);
+//      delay(20);
+//      beginTime = millis();
+//    }
+//    if (ss.available()>0)
+//    {
+//      String data = "";
+//      int beginTimeSS, endTimeSS = millis();
+//      while (ss.available()>0){
+//        char temp = ss.read();
+//        data = data + temp;
+//        delay(10);
+//      }
+//      int len=1;
+//      while (data[len] != NULL){
+//        len++;
+//      }
+//      char str[len+1];
+//      data.toCharArray(str, len+1);
+//      Serial.print(str);
+//      webSocket.emit("PID_param", str);
+//      Read_PID = DATA_SEND_PID_DIS;
+//    }
+//    delay(100);
+//  }
+  if(Read_Flag == DATA_SEND_REQ_EN){
+/*	Data being read every 50ms --------------------------------------------*/
+    if (endTime - beginTime > 100) {
+      char Req_signal_str[22];
+      String data = "";
+/*	Request for ERROR from STM32 ------------------------------------------*/
+		if(Number_of_data == REQ_STM_ERROR)
+		{
+			sprintf(Req_signal_str,"4 ");
+			for(int i=0; i<20; i++)
+			{
+			  Req_signal_str[i+2] = '0';
+			}
+			ss.write(Req_signal_str,22);
+			delay(20);
+		}
+/*	Requet for LEFT SPEED from STM32 --------------------------------------*/
+		else if(Number_of_data == REQ_STM_LEFT)
+		{
+			sprintf(Req_signal_str,"5 ");
+			for(int i=0; i<20; i++)
+			{
+			  Req_signal_str[i+2] = '0';
+			}
+			ss.write(Req_signal_str,22);
+			delay(20);
+		}
+/*	Request for RIGHT SPEED from STM32 ------------------------------------*/
+		else if(Number_of_data == REQ_STM_RIGHT)
+		{
+			sprintf(Req_signal_str,"6 ");
+			for(int i=0; i<20; i++)
+			{
+			  Req_signal_str[i+2] = '0';
+			}
+			ss.write(Req_signal_str,22);
+			delay(20);
+		}
+      beginTime = millis();
+    }
+	
+/*	Read DATA from STM32 --------------------------------------------------*/
+    if (ss.available()>0)
+    {
+      String data = "";
+      int beginTimeSS, endTimeSS = millis();
+      while (ss.available()>0){
+        char temp = ss.read();
+        data = data + temp;
+        delay(10);
+      }
+      int len=1;
+      while (data[len] != NULL){
+        len++;
+      }
+      char str[len+1];
+      data.toCharArray(str, len+1);
+      Serial.print(str);
+/*	Read ERROR from STM32 ------------------------------------------------*/
+      if(Number_of_data == REQ_STM_ERROR)
+      {
+        webSocket.emit("Error_number", str);
+        Number_of_data = REQ_STM_LEFT;
+      }
+/*	Read LEFT SPEED from STM32 -------------------------------------------*/ 
+      else if(Number_of_data == REQ_STM_LEFT)
+      {
+        webSocket.emit("Left_Eng", str);
+        Number_of_data = REQ_STM_RIGHT;
+      }
+/*	Read RIGHT SPEED from STM32 ------------------------------------------*/
+      else if(Number_of_data == REQ_STM_RIGHT)
+      {
+        webSocket.emit("Right_Eng", str);
+    	  Number_of_data = REQ_STM_ERROR;
+      }
+    }
+  }
+  endTime = millis();
   webSocket.loop();
 }
 
@@ -159,6 +289,7 @@ void State_String_compression(int State){
   {
     Final_string[i + ID_Buffer_Size + ID_Buffer_Size] = '0';
   }
+  Read_Flag = State;
   ss.write(Final_string,Send_Buffer_Size);
 }
 void Matrix_String_compression(int First,int Last){

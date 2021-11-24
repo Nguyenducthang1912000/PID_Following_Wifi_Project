@@ -27,7 +27,6 @@ char kp_str[20], ki_str[20], kd_str[20];
 char string[12];
 char Left_str[20], Right_str[20];
 char Left_val[5], Right_val[5];
-char Rx_Buff[24] = {0};
 char First_str[20],Last_str[20];
 /* Menu control flag --------------------------------------------------------*/
 uint8_t menu_display = 1;
@@ -284,7 +283,12 @@ static void Color_Studying_process(void) {
 			}
 			for(int i=0;i<Number_of_Sensors;i++)
 			{
-				Sensor_Threshold[i]=BlackLine[i]-10;
+				if(i == 0)
+				{
+					Sensor_Threshold[i]=BlackLine[i]-12;
+				}
+				else
+					Sensor_Threshold[i]=BlackLine[i]-10;
 			}
 			Color_Read = 0;
 		}

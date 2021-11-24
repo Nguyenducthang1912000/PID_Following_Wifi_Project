@@ -1,7 +1,17 @@
 $(document).ready(function () {
     var socket = io();
+    socket.emit("abc", "hello");
     socket.on("server-received", function () {
         document.getElementById("Result").innerHTML = "Server request has been received";
+    });
+    socket.on("Error_number_received", function (data) {
+        document.getElementById("Error_display").value = data;
+    });
+    socket.on("Left_Eng_received", function (data) {
+        document.getElementById("Left_Eng_display").value = data;
+    });
+    socket.on("Right_Eng_received", function (data) {
+        document.getElementById("Right_Eng_display").value = data;
     });
     $("#BTN_Submit").click(function () {
         var Kp = parseFloat(document.getElementById("PID_P").value);
