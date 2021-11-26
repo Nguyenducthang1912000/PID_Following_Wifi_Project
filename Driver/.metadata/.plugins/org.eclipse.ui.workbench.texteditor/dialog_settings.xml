@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="string_2"/>
+		<item key="selection" value=""/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="0.94"/>
+			<item value="Kp"/>
+			<item value="6.4"/>
+			<item value="Car"/>
+			<item value="Color_Read"/>
 			<item value="string_2"/>
 			<item value="Rx_Buff"/>
 			<item value="Receive_Buffer_Size"/>
@@ -18,11 +23,6 @@
 			<item value="STS_message_ID"/>
 			<item value="ID_STATUS_MESS"/>
 			<item value="FIRST_LAST_message_ID"/>
-			<item value="ESP_DATA_REQ"/>
-			<item value="LEFT_DATA_REQ"/>
-			<item value="DATA_LEFT_REQ"/>
-			<item value="RIGHT_DATA_REQ"/>
-			<item value="HAL_TIM_IC_CaptureCallback"/>
 		</list>
 		<list key="replacehistory">
 			<item value="RECEIVE_BUFF_SIZE"/>
@@ -40,8 +40,8 @@
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item key="DIALOG_X_ORIGIN" value="1073"/>
-		<item key="DIALOG_Y_ORIGIN" value="306"/>
+		<item key="DIALOG_X_ORIGIN" value="1236"/>
+		<item key="DIALOG_Y_ORIGIN" value="418"/>
 		<item key="DIALOG_WIDTH" value="336"/>
 		<item key="DIALOG_HEIGHT" value="454"/>
 		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-15|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>

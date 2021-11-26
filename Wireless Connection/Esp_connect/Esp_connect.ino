@@ -46,7 +46,8 @@ SocketIoClient webSocket;
 SoftwareSerial ss(14,5);
 
 /*  Private variable declaration ----------------------------------*/
-const char* Host_Socket = "192.168.1.234";
+const char* Host_Socket1 = "192.168.1.31";
+const char* Host_Socket2 = "192.168.1.234";
 unsigned int Port_Socket = 3000;
 float P,I,D;
 uint8_t State,First,Last;
@@ -71,7 +72,7 @@ void setup() {
    webSocket.on("PID_value",PID_handle);
    webSocket.on("Car_State",Car_State_handle);
    webSocket.on("First_Last",Matrix_handle);
-   webSocket.begin(Host_Socket, Port_Socket, "/socket.io/?transport=websocket");
+   webSocket.begin(Host_Socket1, Port_Socket, "/socket.io/?transport=websocket");
    pinMode(LED_BUILTIN, HIGH);
 }
 
@@ -126,14 +127,13 @@ void loop() {
         data = data + temp;
         delay(10);
       }
-      data = data + "\"";
       int len=1;
       while (data[len] != NULL){
         len++;
       }
       char str[len+1];
       data.toCharArray(str, len+1);
-      webSocket.emit("PID_param", str); 
+      webSocket.emit("PID_param", str);
       /*  Send STM32 bootup state -----------------------------------------*/
       Serial.print(data);
       PID_Boot = PID_SHUTDOWN;

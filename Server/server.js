@@ -48,6 +48,13 @@ io.on("connection", function (socket) {
     });
     socket.on("PID_param", function (data) {   //Su kien cho thông số PID ban đầu khi có nguồn điện 
         console.log(data);
+        var temp = data.split(" ");
+        var data1 = {
+            "Kp": parseFloat(temp[0]),
+            "Ki": parseFloat(temp[1]),
+            "Kd": parseFloat(temp[2])
+        }
+        io.sockets.emit("PID_data_received", data1);
     });
     socket.on("STM32_BOOTUP", function (data) {         //Sự kiện khi cả STM32 và ESP bootup lần đầu khi có nguồn điện 
         console.log(data);

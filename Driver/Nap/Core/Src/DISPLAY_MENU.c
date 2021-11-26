@@ -4,7 +4,7 @@
  *  Created on: May 6, 2021
  *      Author: DucThang
  */
-#include "DISPLAY_MENU.h"
+#include "main.h"
 /* Menu Types definition -----------------------------------------------------*/
 #define Running_Process 				0
 #define Main_menu 						1
@@ -19,7 +19,6 @@
 
 #define ADC_Sample_Times				50000
 #define Number_of_Sensors			 	6
-
 
 /* System buffer ------------------------------------------------------------*/
 char kp_val[6], ki_val[6], kd_val[6];
@@ -258,7 +257,12 @@ static void Speed_menu(uint8_t line) {
 }
 
 static void Color_Studying_process(void) {
-	uint16_t BlackLine[] = {0 ,0 ,0 ,0, 0, 0};
+#ifdef	READ_WHITE_LINE
+	uint16_t WhiteLine[] = {0 ,0 ,0 ,0, 0, 0};
+#endif
+#ifdef READ_BLACK_LINE
+	uint16_t BlackLine[] = {0, 0, 0, 0, 0, 0};
+#endif
 	Color_Read = 1;
 	lcd_send_cmd(0x80 | 0x00);
 	lcd_send_string("Out line read      ");
@@ -275,21 +279,42 @@ static void Color_Studying_process(void) {
 			{
 				for(int i=0;i<Number_of_Sensors;i++)
 				{
-					if(Sensor_ADC_Value[i] > BlackLine[i])
+#ifdef READ_WHITE_LINE
+					if(Sensor_ADC_Value[i] > WhiteLine[i])
+					{
+						WhiteLine[i] = Sensor_ADC_Value[i];
+					}
+#endif
+#ifdef READ_BLACK_LINE
+					if(Sensor_ADC_Value[i] < WhiteLine[i])
 					{
 						BlackLine[i] = Sensor_ADC_Value[i];
 					}
+#endif
 				}
 			}
+#ifdef READ_WHITE_LINE
 			for(int i=0;i<Number_of_Sensors;i++)
 			{
 				if(i == 0)
 				{
-					Sensor_Threshold[i]=BlackLine[i]-12;
+					Sensor_Threshold[i]=WhiteLine[i];   //197
 				}
 				else
-					Sensor_Threshold[i]=BlackLine[i]-10;
+					Sensor_Threshold[i]=WhiteLine[i];
 			}
+#endif
+#ifdef READ_BLACK_LINE
+			for(int i=0;i<Number_of_Sensors;i++)
+			{
+				if(i == 0)
+				{
+					Sensor_Threshold[i]=BlackLine[i];
+				}
+				else
+					Sensor_Threshold[i]=BlackLine[i];
+			}
+#endif
 			Color_Read = 0;
 		}
 	}
@@ -308,6 +333,7 @@ static void LineDetect_show(void) {
 	lcd_send_string("Press C for cancel ");
 	while (cancel_menu) {
 		for (int i = 0; i < 6; i++) {
+#ifdef READ_WHITE_LINE
 			if (Sensor_ADC_Value[0] < Sensor_Threshold[0]) {
 				lcd_send_cmd(0x80 | 0x16);
 				lcd_send_string("1");
@@ -329,6 +355,56 @@ static void LineDetect_show(void) {
 				lcd_send_string("1");
 			}
 			if (Sensor_ADC_Value[5] < Sensor_Threshold[5]) {
+				lcd_send_cmd(0x80 | 0x20);
+				lcd_send_string("1");
+			}
+			if (Sensor_ADC_Value[0] >= Sensor_Threshold[0]) {
+				lcd_send_cmd(0x80 | 0x16);
+				lcd_send_string(" ");
+			}
+			if (Sensor_ADC_Value[1] >= Sensor_Threshold[1]) {
+				lcd_send_cmd(0x80 | 0x18);
+				lcd_send_string(" ");
+			}
+			if (Sensor_ADC_Value[2] >= Sensor_Threshold[2]) {
+				lcd_send_cmd(0x80 | 0x1A);
+				lcd_send_string(" ");
+			}
+			if (Sensor_ADC_Value[3] >= Sensor_Threshold[3]) {
+				lcd_send_cmd(0x80 | 0x1C);
+				lcd_send_string(" ");
+			}
+			if (Sensor_ADC_Value[4] >= Sensor_Threshold[4]) {
+				lcd_send_cmd(0x80 | 0x1E);
+				lcd_send_string(" ");
+			}
+			if (Sensor_ADC_Value[5] >= Sensor_Threshold[5]) {
+				lcd_send_cmd(0x80 | 0x20);
+				lcd_send_string(" ");
+			}
+#endif
+#ifdef READ_BLACK_LINE
+			if (Sensor_ADC_Value[0] <= Sensor_Threshold[0]) {
+				lcd_send_cmd(0x80 | 0x16);
+				lcd_send_string("1");
+			}
+			if (Sensor_ADC_Value[1] <= Sensor_Threshold[1]) {
+				lcd_send_cmd(0x80 | 0x18);
+				lcd_send_string("1");
+			}
+			if (Sensor_ADC_Value[2] <= Sensor_Threshold[2]) {
+				lcd_send_cmd(0x80 | 0x1A);
+				lcd_send_string("1");
+			}
+			if (Sensor_ADC_Value[3] <= Sensor_Threshold[3]) {
+				lcd_send_cmd(0x80 | 0x1C);
+				lcd_send_string("1");
+			}
+			if (Sensor_ADC_Value[4] <= Sensor_Threshold[4]) {
+				lcd_send_cmd(0x80 | 0x1E);
+				lcd_send_string("1");
+			}
+			if (Sensor_ADC_Value[5] <= Sensor_Threshold[5]) {
 				lcd_send_cmd(0x80 | 0x20);
 				lcd_send_string("1");
 			}
@@ -356,6 +432,7 @@ static void LineDetect_show(void) {
 				lcd_send_cmd(0x80 | 0x20);
 				lcd_send_string(" ");
 			}
+#endif
 		}
 	}
 	lcd_clear();

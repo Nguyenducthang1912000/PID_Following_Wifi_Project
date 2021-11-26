@@ -74,13 +74,23 @@
 #define DATA_TRANS_EN 					1U
 
 /* Transfer PID DATA ---------------------------------------------------------*/
-#define Send_Buffer_Size 22
-#define Kp_Buffer_Size 7
-#define Ki_Buffer_Size 7
-#define Kd_Buffer_Size 7
+#define Send_Buffer_Size 				22
+#define Kp_Buffer_Size 					7
+#define Ki_Buffer_Size 					7
+#define Kd_Buffer_Size 					7
 /* Sensor position -----------------------------------------------------------*/
 
 	/*		0			1			2			3			4			5		*/
+
+/* Max Speed Constrains ------------------------------------------------------*/
+#define MAXSPEED_RIGHT					3200
+#define MAXSPEED_LEFT					3390
+
+/* Default PID ---------------------------------------------------------------*/
+#define DEFAULT_KP						36.42f
+#define DEFAULT_KI						0.0f
+#define DEFAULT_KD						2.3f
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -117,8 +127,9 @@ uint8_t Left_modify_flag = 0, Right_modify_flag = 0;
 uint8_t First_point_modify_flag = 0, Last_point_modify_flag = 0;
 uint8_t Status = CAR_IS_RUNNING;
 uint8_t Trans_flag = DATA_TRANS_DIS;
+uint8_t LCD_INIT_FLAG = 1;
 int8_t First_point = 0,Last_point = 0;
-int16_t Left = 3230, Right = 3200;
+int16_t Left = 3390, Right = 3200;
 int16_t positionLeft = 0, positionRight = 0;
 uint16_t Sensor_Threshold[] = { 3900, 3900, 3900, 4000, 4000, 4000 };
 uint16_t Sensor_ADC_Value[6];
@@ -137,7 +148,7 @@ int Speed_Left = 0, Speed_Right = 0;
 int Check_line = 0;
 int Error_Val;
 int old_countLeft,old_countRight;
-float Kp = 0, Ki = 0, Kd = 0;
+float Kp = DEFAULT_KP, Ki = DEFAULT_KI, Kd = DEFAULT_KD;
 char string_2[1];
 char PID_Rx[12];
 char kp_val[10], ki_val[10], kd_val[10];
@@ -230,6 +241,16 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
 	else if(ID == DATA_PID_REQ)
 	{
+//	  char Kp_string[15],Ki_string[15],Kd_string[15],Final_string[45];
+//	  memset(Final_string,0,sizeof(Final_string));
+//	  sprintf(Kp_string,"{\"Kp\":%06.2f,",Kp);
+//	  sprintf(Ki_string,"\"Ki\":%06.2f,",Ki);
+//	  sprintf(Kd_string,"\"Kd\":%06.2f}\"",Kd);
+//	  strcat(Final_string,Kp_string);
+//	  strcat(Final_string,Ki_string);
+//	  strcat(Final_string,Kd_string);
+//	  HAL_UART_Transmit(&huart6, Final_string, sizeof(Final_string), 10000);
+
 	  char Kp_string[Kp_Buffer_Size+1],Ki_string[Ki_Buffer_Size+1],Kd_string[Kd_Buffer_Size+1],Final_string[Send_Buffer_Size];
 	  memset(Final_string,0,sizeof(Final_string));
 	  sprintf(Kp_string,"%06.2f ",Kp);
@@ -311,7 +332,16 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
-		ReadFlash();
+		if(LCD_INIT_FLAG == 1)
+		{
+			for(int i = 0; i < 3; i++)
+			{
+				lcd_init();
+				HAL_Delay(500);
+				lcd_send_cmd(0);
+			}
+			LCD_INIT_FLAG = 0;
+		}
 		lcd_send_cmd(1);
 		while (menu_display)
 		{
@@ -900,28 +930,76 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void Running(void) // Activate the car for running
 {
+	uint8_t Temp_Line;
 	lcd_send_cmd(0x80 | 0x00);
 	lcd_send_string("Car is Running!        ");
 	lcd_send_cmd(0x80 | 0x40);
 	lcd_send_string("Press C for cancel     ");
 	while (cancel_running) {
+/*======================== CACULATING SPEED EACH 300ms ============================================*/
 	unsigned long currentMillis  = HAL_GetTick();
 	Encoder_Read();
 	if(currentMillis  - previousMillis  >= interval)
 	{
-		previousMillis  = previousMillis ;
+		previousMillis  = previousMillis;
 		rateLeft = (countLeft - countLeft_prv)*1345/374;
 		rateRight = (countRight - countRight_prv)*1345/374;
 		countLeft_prv = countLeft;
 		countRight_prv = countRight;
 	}
-	Sensor_Convert_A2D();
-	Error_Val = Error_Return(LineDetect);
-	int16_t PID_val = Line_Follower_PID(3500,Error_Val, &Car);
-	Motor_Speed_R = (Right + PID_val);
-	Motor_Speed_L = (Left - PID_val);
-	Motor_Speed_R = Constraint(Motor_Speed_R, -3000,3200);
-	Motor_Speed_L = Constraint(Motor_Speed_L, -3000,3200);
+	if(currentMillis - previousMillis >= 1)
+	{
+		previousMillis  = previousMillis;
+		Sensor_Convert_A2D();
+	}
+
+	Temp_Line = LineDetect & 0b10000100;
+	if(Temp_Line == 0b10000000 || Temp_Line == 0b00000100)
+	{
+//		Sensor_Convert_A2D();
+//		if(LineDetect == 0b11000000 || LineDetect == 0b10000000){
+//			Error_Val = Error_Return(3000);
+//			int16_t PID_Val = Line_Follower_PID(3300,Error_Val,&Car);
+//			Motor_Speed_R = (Right + PID_Val);
+//			Motor_Speed_L = (Left - PID_Val);
+//			Motor_Speed_R = Constraint(Motor_Speed_R, -MAXSPEED_RIGHT,MAXSPEED_RIGHT);
+//			Motor_Speed_L = Constraint(Motor_Speed_L, -MAXSPEED_LEFT,MAXSPEED_LEFT);
+//			MotorR_SetPWM(Motor_Speed_R);
+//			MotorL_SetPWM(Motor_Speed_L);
+//		}
+//		else if(LineDetect == 0b00000100 || LineDetect == 0b00001100)
+//		{
+//			Error_Val = Error_Return(3000);
+//			int16_t PID_Val = Line_Follower_PID(3500,Error_Val,&Car);
+//			Motor_Speed_R = (Right + PID_Val);
+//			Motor_Speed_L = (Left - PID_Val);
+//			Motor_Speed_R = Constraint(Motor_Speed_R, -MAXSPEED_RIGHT,MAXSPEED_RIGHT);
+//			Motor_Speed_L = Constraint(Motor_Speed_L, -MAXSPEED_LEFT,MAXSPEED_LEFT);
+//			MotorR_SetPWM(Motor_Speed_R);
+//			MotorL_SetPWM(Motor_Speed_L);
+//		}
+//		else
+//		{
+//			cancel_running = 0;
+//		}
+		Sensor_Convert_A2D();
+		int16_t PID_Val = Line_Follower_PID(3500,3500,&Car);
+		Motor_Speed_R = (Right + PID_Val);
+		Motor_Speed_L = (Left - PID_Val);
+		Motor_Speed_R = Constraint(Motor_Speed_R, -MAXSPEED_RIGHT,MAXSPEED_RIGHT);
+		Motor_Speed_L = Constraint(Motor_Speed_L, -MAXSPEED_LEFT,MAXSPEED_LEFT);
+	}
+	else
+	{
+		Sensor_Convert_A2D();
+		Error_Val = Error_Return(LineDetect);
+		int16_t PID_Val = Line_Follower_PID(3500,Error_Val,&Car);
+		Motor_Speed_R = (Right + PID_Val);
+		Motor_Speed_L = (Left - PID_Val);
+		Motor_Speed_R = Constraint(Motor_Speed_R, -MAXSPEED_RIGHT,MAXSPEED_RIGHT);
+		Motor_Speed_L = Constraint(Motor_Speed_L, -MAXSPEED_LEFT,MAXSPEED_LEFT);
+	}
+
 	if(Status == 0)
 	{
 		Trans_flag = DATA_TRANS_DIS;
@@ -960,56 +1038,34 @@ void Turn_180_Deg()
 }
 static int Error_Return (uint8_t Sensor_Array){
 	switch(Sensor_Array){
-//	case 0b00111100:
-//		Check_Noise();
-//		return 10000;
-//		break;
-//	case 0b00011100:
-//		Check_Noise();
-//		return 10000;
-//		break;
-//	case 0b10111100:
-//		Check_Noise();
-//		return 10000;
-//		break;
-//	case 0b10011100:
-//		Check_Noise();
-//		return 10000;
-//		break;
-	case 0b00000100:
-		return 8500;
+	case 0b00001000:
+		return 4000;
 		break;
-	case 0b00001100:
-		return 7500;
-		break;
-
 	case 0b00011000:
-		return 4200;
-		break;
-
-	case 0b00010000:
 		return 3800;
 		break;
 
-	case 0b00000000:
+	case 0b00010000:
+		return 3600;
+		break;
+
+	case 0b00110000:
 		return 3500;
 		break;
 
 	case 0b00100000:
-		return 3300;
+		return 3400;
 		break;
 
 	case 0b01100000:
-		return 2900;
+		return 3300;
 		break;
-
-	case 0b11000000:
+	case 0b01000000:
+		return 3250;
 		break;
-
-	case 0b10000000:
-		break;
-
+/*---------------------dont care------------------------*/
 	default:
+		return 3500;
 		break;
 	}
 }

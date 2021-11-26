@@ -17,6 +17,12 @@ $(document).ready(function () {
         document.getElementById("BTN_Stop").value = "Car Run";
         document.getElementById("BTN_Stop").innerHTML = "Car Run";
     })
+    socket.on("PID_data_received", function (data) {
+        document.getElementById("PID_P").value = data.Kp;
+        document.getElementById("PID_I").value = data.Ki;
+        document.getElementById("PID_D").value = data.Kd;
+
+    })
     $("#BTN_Submit").click(function () {
         var Kp = parseFloat(document.getElementById("PID_P").value);
         var Ki = parseFloat(document.getElementById("PID_I").value);
