@@ -296,12 +296,7 @@ static void Color_Studying_process(void) {
 #ifdef READ_WHITE_LINE
 			for(int i=0;i<Number_of_Sensors;i++)
 			{
-				if(i == 0)
-				{
-					Sensor_Threshold[i]=WhiteLine[i];   //197
-				}
-				else
-					Sensor_Threshold[i]=WhiteLine[i];
+				Sensor_Threshold[i]=WhiteLine[i] - 3;
 			}
 #endif
 #ifdef READ_BLACK_LINE

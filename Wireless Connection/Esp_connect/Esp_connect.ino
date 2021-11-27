@@ -46,7 +46,7 @@ SocketIoClient webSocket;
 SoftwareSerial ss(14,5);
 
 /*  Private variable declaration ----------------------------------*/
-const char* Host_Socket1 = "192.168.1.31";
+const char* Host_Socket1 = "192.168.1.32";
 const char* Host_Socket2 = "192.168.1.234";
 unsigned int Port_Socket = 3000;
 float P,I,D;

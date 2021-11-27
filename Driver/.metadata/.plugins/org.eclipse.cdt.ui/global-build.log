@@ -1,9 +1,9 @@
-23:14:38 **** Incremental Build of configuration Debug for project Nap ****
+20:05:48 **** Incremental Build of configuration Debug for project Nap ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 ../Core/Src/main.c: In function 'HAL_UART_RxCpltCallback':
-../Core/Src/main.c:223:30: warning: pointer targets in passing argument 2 of 'HAL_UART_Transmit' differ in signedness [-Wpointer-sign]
-  223 |   HAL_UART_Transmit(&huart6, Error_Str, sizeof(Error_Str), 5000);
+../Core/Src/main.c:237:30: warning: pointer targets in passing argument 2 of 'HAL_UART_Transmit' differ in signedness [-Wpointer-sign]
+  237 |   HAL_UART_Transmit(&huart6, Error_Str, sizeof(Error_Str), 5000);
       |                              ^~~~~~~~~
       |                              |
       |                              char *
@@ -14,8 +14,8 @@ In file included from ../Core/Inc/stm32f4xx_hal_conf.h:406,
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:723:73: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'char *'
   723 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout);
       |                                                                ~~~~~~~~~^~~~~
-../Core/Src/main.c:229:30: warning: pointer targets in passing argument 2 of 'HAL_UART_Transmit' differ in signedness [-Wpointer-sign]
-  229 |   HAL_UART_Transmit(&huart6, Speed_Left_Str, sizeof(Speed_Left_Str),5000);
+../Core/Src/main.c:243:30: warning: pointer targets in passing argument 2 of 'HAL_UART_Transmit' differ in signedness [-Wpointer-sign]
+  243 |   HAL_UART_Transmit(&huart6, Speed_Left_Str, sizeof(Speed_Left_Str),5000);
       |                              ^~~~~~~~~~~~~~
       |                              |
       |                              char *
@@ -26,8 +26,8 @@ In file included from ../Core/Inc/stm32f4xx_hal_conf.h:406,
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:723:73: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'char *'
   723 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout);
       |                                                                ~~~~~~~~~^~~~~
-../Core/Src/main.c:235:30: warning: pointer targets in passing argument 2 of 'HAL_UART_Transmit' differ in signedness [-Wpointer-sign]
-  235 |   HAL_UART_Transmit(&huart6, Speed_Right_Str, sizeof(Speed_Right_Str), 5000);
+../Core/Src/main.c:249:30: warning: pointer targets in passing argument 2 of 'HAL_UART_Transmit' differ in signedness [-Wpointer-sign]
+  249 |   HAL_UART_Transmit(&huart6, Speed_Right_Str, sizeof(Speed_Right_Str), 5000);
       |                              ^~~~~~~~~~~~~~~
       |                              |
       |                              char *
@@ -38,8 +38,8 @@ In file included from ../Core/Inc/stm32f4xx_hal_conf.h:406,
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:723:73: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'char *'
   723 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout);
       |                                                                ~~~~~~~~~^~~~~
-../Core/Src/main.c:257:31: warning: pointer targets in passing argument 2 of 'HAL_UART_Transmit' differ in signedness [-Wpointer-sign]
-  257 |    HAL_UART_Transmit(&huart6, Final_string, sizeof(Final_string), 10000);
+../Core/Src/main.c:271:31: warning: pointer targets in passing argument 2 of 'HAL_UART_Transmit' differ in signedness [-Wpointer-sign]
+  271 |    HAL_UART_Transmit(&huart6, Final_string, sizeof(Final_string), 10000);
       |                               ^~~~~~~~~~~~
       |                               |
       |                               char *
@@ -50,8 +50,8 @@ In file included from ../Core/Inc/stm32f4xx_hal_conf.h:406,
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:723:73: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'char *'
   723 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout);
       |                                                                ~~~~~~~~~^~~~~
-../Core/Src/main.c:262:30: warning: pointer targets in passing argument 2 of 'HAL_UART_Transmit' differ in signedness [-Wpointer-sign]
-  262 |   HAL_UART_Transmit(&huart6, Boot, sizeof(Boot), 1000);
+../Core/Src/main.c:276:30: warning: pointer targets in passing argument 2 of 'HAL_UART_Transmit' differ in signedness [-Wpointer-sign]
+  276 |   HAL_UART_Transmit(&huart6, Boot, sizeof(Boot), 1000);
       |                              ^~~~
       |                              |
       |                              char *
@@ -62,8 +62,8 @@ In file included from ../Core/Inc/stm32f4xx_hal_conf.h:406,
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:723:73: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'char *'
   723 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout);
       |                                                                ~~~~~~~~~^~~~~
-../Core/Src/main.c:266:31: warning: pointer targets in passing argument 2 of 'HAL_UART_Receive_IT' differ in signedness [-Wpointer-sign]
-  266 |  HAL_UART_Receive_IT(&huart6, Rx_Buffer, RECEIVE_BUFF_SIZE);
+../Core/Src/main.c:280:31: warning: pointer targets in passing argument 2 of 'HAL_UART_Receive_IT' differ in signedness [-Wpointer-sign]
+  280 |  HAL_UART_Receive_IT(&huart6, Rx_Buffer, RECEIVE_BUFF_SIZE);
       |                               ^~~~~~~~~
       |                               |
       |                               char *
@@ -74,18 +74,18 @@ In file included from ../Core/Inc/stm32f4xx_hal_conf.h:406,
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:726:75: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'char *'
   726 | HAL_StatusTypeDef HAL_UART_Receive_IT(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size);
       |                                                                  ~~~~~~~~~^~~~~
-../Core/Src/main.c:193:22: warning: unused variable 'Kd_pre' [-Wunused-variable]
-  193 |  float Kp_pre,Ki_pre,Kd_pre;
+../Core/Src/main.c:207:22: warning: unused variable 'Kd_pre' [-Wunused-variable]
+  207 |  float Kp_pre,Ki_pre,Kd_pre;
       |                      ^~~~~~
-../Core/Src/main.c:193:15: warning: unused variable 'Ki_pre' [-Wunused-variable]
-  193 |  float Kp_pre,Ki_pre,Kd_pre;
+../Core/Src/main.c:207:15: warning: unused variable 'Ki_pre' [-Wunused-variable]
+  207 |  float Kp_pre,Ki_pre,Kd_pre;
       |               ^~~~~~
-../Core/Src/main.c:193:8: warning: unused variable 'Kp_pre' [-Wunused-variable]
-  193 |  float Kp_pre,Ki_pre,Kd_pre;
+../Core/Src/main.c:207:8: warning: unused variable 'Kp_pre' [-Wunused-variable]
+  207 |  float Kp_pre,Ki_pre,Kd_pre;
       |        ^~~~~~
 ../Core/Src/main.c: In function 'main':
-../Core/Src/main.c:320:32: warning: pointer targets in passing argument 2 of 'HAL_UART_Receive_IT' differ in signedness [-Wpointer-sign]
-  320 |   HAL_UART_Receive_IT(&huart6, Rx_Buffer, RECEIVE_BUFF_SIZE);
+../Core/Src/main.c:334:32: warning: pointer targets in passing argument 2 of 'HAL_UART_Receive_IT' differ in signedness [-Wpointer-sign]
+  334 |   HAL_UART_Receive_IT(&huart6, Rx_Buffer, RECEIVE_BUFF_SIZE);
       |                                ^~~~~~~~~
       |                                |
       |                                char *
@@ -96,9 +96,41 @@ In file included from ../Core/Inc/stm32f4xx_hal_conf.h:406,
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:726:75: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'char *'
   726 | HAL_StatusTypeDef HAL_UART_Receive_IT(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size);
       |                                                                  ~~~~~~~~~^~~~~
+../Core/Src/main.c: In function 'Running':
+../Core/Src/main.c:968:4: warning: implicit declaration of function 'Right_Turn' [-Wimplicit-function-declaration]
+  968 |    Right_Turn();
+      |    ^~~~~~~~~~
+../Core/Src/main.c:970:11: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+  970 |   else if(Temp_Line = 0b10000000)
+      |           ^~~~~~~~~
+../Core/Src/main.c:977:5: warning: implicit declaration of function 'Left_Turn' [-Wimplicit-function-declaration]
+  977 |     Left_Turn();
+      |     ^~~~~~~~~
+../Core/Src/main.c:996:4: warning: implicit declaration of function 'Left_Turn_Ngaba' [-Wimplicit-function-declaration]
+  996 |    Left_Turn_Ngaba();
+      |    ^~~~~~~~~~~~~~~
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:1034:6: warning: conflicting types for 'Left_Turn'
+ 1034 | void Left_Turn()
+      |      ^~~~~~~~~
+../Core/Src/main.c:977:5: note: previous implicit declaration of 'Left_Turn' was here
+  977 |     Left_Turn();
+      |     ^~~~~~~~~
+../Core/Src/main.c:1069:6: warning: conflicting types for 'Left_Turn_Ngaba'
+ 1069 | void Left_Turn_Ngaba()
+      |      ^~~~~~~~~~~~~~~
+../Core/Src/main.c:996:4: note: previous implicit declaration of 'Left_Turn_Ngaba' was here
+  996 |    Left_Turn_Ngaba();
+      |    ^~~~~~~~~~~~~~~
+../Core/Src/main.c:1082:6: warning: conflicting types for 'Right_Turn'
+ 1082 | void Right_Turn()
+      |      ^~~~~~~~~~
+../Core/Src/main.c:968:4: note: previous implicit declaration of 'Right_Turn' was here
+  968 |    Right_Turn();
+      |    ^~~~~~~~~~
 ../Core/Src/main.c: In function 'ReadFlash':
-../Core/Src/main.c:1361:30: warning: passing argument 2 of 'Flash_Read_Data' from incompatible pointer type [-Wincompatible-pointer-types]
- 1361 |  Flash_Read_Data(0x08020000, PID_Rx);
+../Core/Src/main.c:1417:30: warning: passing argument 2 of 'Flash_Read_Data' from incompatible pointer type [-Wincompatible-pointer-types]
+ 1417 |  Flash_Read_Data(0x08020000, PID_Rx);
       |                              ^~~~~~
       |                              |
       |                              char *
@@ -106,8 +138,8 @@ In file included from ../Core/Inc/main.h:43,
                  from ../Core/Src/main.c:21:
 ../Core/Inc/FLASH_SECTOR.h:12:66: note: expected 'volatile uint32_t *' {aka 'volatile long unsigned int *'} but argument is of type 'char *'
    12 | void Flash_Read_Data (uint32_t StartPageAddress, __IO uint32_t * DATA_32);
-../Core/Src/main.c:1362:17: warning: passing argument 1 of 'Convert_To_Str' from incompatible pointer type [-Wincompatible-pointer-types]
- 1362 |  Convert_To_Str(PID_Rx, string_2);
+../Core/Src/main.c:1418:17: warning: passing argument 1 of 'Convert_To_Str' from incompatible pointer type [-Wincompatible-pointer-types]
+ 1418 |  Convert_To_Str(PID_Rx, string_2);
       |                 ^~~~~~
       |                 |
       |                 char *
@@ -117,11 +149,11 @@ In file included from ../Core/Inc/main.h:43,
    13 | void Convert_To_Str (uint32_t *data, char *str);
       |                      ~~~~~~~~~~^~~~
 At top level:
-../Core/Src/main.c:1359:6: warning: 'ReadFlash' defined but not used [-Wunused-function]
- 1359 | void ReadFlash(void)
+../Core/Src/main.c:1415:6: warning: 'ReadFlash' defined but not used [-Wunused-function]
+ 1415 | void ReadFlash(void)
       |      ^~~~~~~~~
-../Core/Src/main.c:1105:13: warning: 'Sensor_Print_LineDetect' defined but not used [-Wunused-function]
- 1105 | static void Sensor_Print_LineDetect()
+../Core/Src/main.c:1161:13: warning: 'Sensor_Print_LineDetect' defined but not used [-Wunused-function]
+ 1161 | static void Sensor_Print_LineDetect()
       |             ^~~~~~~~~~~~~~~~~~~~~~~
 arm-none-eabi-gcc -o "Nap.elf" @"objects.list"   -mcpu=cortex-m4 -T"D:\Baocaokhoaluan_BK\Driver\Nap\STM32F401CCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Nap.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: Nap.elf
@@ -130,17 +162,17 @@ arm-none-eabi-size   Nap.elf
 arm-none-eabi-objdump -h -S  Nap.elf  > "Nap.list"
 arm-none-eabi-objcopy  -O binary  Nap.elf  "Nap.bin"
    text	   data	    bss	    dec	    hex	filename
-  61604	    572	   2860	  65036	   fe0c	Nap.elf
+  61940	    572	   2868	  65380	   ff64	Nap.elf
 Finished building: default.size.stdout
  
 Finished building: Nap.bin
  
 Finished building: Nap.list
  
-23:14:48 **** Incremental Build of configuration Debug for project Nap ****
+20:06:00 **** Incremental Build of configuration Debug for project Nap ****
 make -j8 all 
 arm-none-eabi-size   Nap.elf 
    text	   data	    bss	    dec	    hex	filename
-  61604	    572	   2860	  65036	   fe0c	Nap.elf
+  61940	    572	   2868	  65380	   ff64	Nap.elf
 Finished building: default.size.stdout
  
