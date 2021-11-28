@@ -1076,7 +1076,7 @@ void Left_Turn()
 void Left_Turn_Ngaba()
 {
 	Sensor_Convert_A2D();
-	MotorR_SetPWM(4500);
+	MotorR_SetPWM(4800);
 	MotorL_SetPWM(-3000);
 	HAL_Delay(20);
 	while((LineDetect & 0b11000000) <= 64)
@@ -1085,6 +1085,8 @@ void Left_Turn_Ngaba()
 	}
 	while(LineDetect != 0b00011000)
 	{
+		MotorR_SetPWM(3200);
+		MotorL_SetPWM(-3300);
 		Sensor_Convert_A2D();
 	}
 	Flag_u8 = LINE_MIDDLE;

@@ -1061,7 +1061,7 @@ void Left_Turn()
 					Sensor_Convert_A2D();
 					MotorR_SetPWM(4800);
 					MotorL_SetPWM(-3500);
-					if(LineDetect == 0b00011000)
+					if(LineDetect == 0b00100000)
 					{
 						Sensor_Convert_A2D();
 						Turn_process = 0;
@@ -1076,16 +1076,14 @@ void Left_Turn()
 void Left_Turn_Ngaba()
 {
 	Sensor_Convert_A2D();
-	MotorR_SetPWM(4500);
+	MotorR_SetPWM(4800);
 	MotorL_SetPWM(-3000);
 	HAL_Delay(20);
-	while((LineDetect & 0b11000000) <= 64)
+	while((LineDetect & 0b11000000) < 64)
 	{
 		Sensor_Convert_A2D();
-	}
-	while(LineDetect != 0b00011000)
-	{
-		Sensor_Convert_A2D();
+		MotorR_SetPWM(6600);
+		MotorL_SetPWM(-4000);
 	}
 	Flag_u8 = LINE_MIDDLE;
 }
@@ -1111,13 +1109,13 @@ void Right_Turn()
 					Sensor_Convert_A2D();
 					MotorL_SetPWM(4500);
 					MotorR_SetPWM(-3500);
-					if(LineDetect == 0b00110000)
+					if(LineDetect == 0b00010000)
 					{
 						Turn_process = 0;
+						Flag_u8 = LINE_MIDDLE;
 						break;
 					}
 				}
-				Flag_u8 = LINE_MIDDLE;
 			}
 		}
 	}
@@ -1139,7 +1137,7 @@ static int Error_Return (uint8_t Sensor_Array){
 		return 3600;
 		break;
 
-	case 0b00110000:
+	case 0b00000000:
 		return 3500;
 		break;
 

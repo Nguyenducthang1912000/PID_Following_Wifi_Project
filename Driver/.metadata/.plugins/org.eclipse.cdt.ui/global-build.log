@@ -1,4 +1,4 @@
-19:41:21 **** Incremental Build of configuration Debug for project Nap ****
+20:15:25 **** Incremental Build of configuration Debug for project Nap ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 ../Core/Src/main.c: In function 'HAL_UART_RxCpltCallback':
@@ -119,15 +119,15 @@ In file included from ../Core/Inc/stm32f4xx_hal_conf.h:406,
 ../Core/Src/main.c:1003:4: note: previous implicit declaration of 'Left_Turn_Ngaba' was here
  1003 |    Left_Turn_Ngaba();
       |    ^~~~~~~~~~~~~~~
-../Core/Src/main.c:1090:6: warning: conflicting types for 'Right_Turn'
- 1090 | void Right_Turn()
+../Core/Src/main.c:1092:6: warning: conflicting types for 'Right_Turn'
+ 1092 | void Right_Turn()
       |      ^~~~~~~~~~
 ../Core/Src/main.c:974:5: note: previous implicit declaration of 'Right_Turn' was here
   974 |     Right_Turn();
       |     ^~~~~~~~~~
 ../Core/Src/main.c: In function 'ReadFlash':
-../Core/Src/main.c:1454:30: warning: passing argument 2 of 'Flash_Read_Data' from incompatible pointer type [-Wincompatible-pointer-types]
- 1454 |  Flash_Read_Data(0x08020000, PID_Rx);
+../Core/Src/main.c:1456:30: warning: passing argument 2 of 'Flash_Read_Data' from incompatible pointer type [-Wincompatible-pointer-types]
+ 1456 |  Flash_Read_Data(0x08020000, PID_Rx);
       |                              ^~~~~~
       |                              |
       |                              char *
@@ -135,8 +135,8 @@ In file included from ../Core/Inc/main.h:43,
                  from ../Core/Src/main.c:21:
 ../Core/Inc/FLASH_SECTOR.h:12:66: note: expected 'volatile uint32_t *' {aka 'volatile long unsigned int *'} but argument is of type 'char *'
    12 | void Flash_Read_Data (uint32_t StartPageAddress, __IO uint32_t * DATA_32);
-../Core/Src/main.c:1455:17: warning: passing argument 1 of 'Convert_To_Str' from incompatible pointer type [-Wincompatible-pointer-types]
- 1455 |  Convert_To_Str(PID_Rx, string_2);
+../Core/Src/main.c:1457:17: warning: passing argument 1 of 'Convert_To_Str' from incompatible pointer type [-Wincompatible-pointer-types]
+ 1457 |  Convert_To_Str(PID_Rx, string_2);
       |                 ^~~~~~
       |                 |
       |                 char *
@@ -146,11 +146,11 @@ In file included from ../Core/Inc/main.h:43,
    13 | void Convert_To_Str (uint32_t *data, char *str);
       |                      ~~~~~~~~~~^~~~
 At top level:
-../Core/Src/main.c:1452:6: warning: 'ReadFlash' defined but not used [-Wunused-function]
- 1452 | void ReadFlash(void)
+../Core/Src/main.c:1454:6: warning: 'ReadFlash' defined but not used [-Wunused-function]
+ 1454 | void ReadFlash(void)
       |      ^~~~~~~~~
-../Core/Src/main.c:1198:13: warning: 'Sensor_Print_LineDetect' defined but not used [-Wunused-function]
- 1198 | static void Sensor_Print_LineDetect()
+../Core/Src/main.c:1200:13: warning: 'Sensor_Print_LineDetect' defined but not used [-Wunused-function]
+ 1200 | static void Sensor_Print_LineDetect()
       |             ^~~~~~~~~~~~~~~~~~~~~~~
 arm-none-eabi-gcc -o "Nap.elf" @"objects.list"   -mcpu=cortex-m4 -T"D:\Baocaokhoaluan_BK\Driver\Nap\STM32F401CCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Nap.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: Nap.elf
@@ -166,7 +166,7 @@ Finished building: Nap.bin
  
 Finished building: Nap.list
  
-19:41:30 **** Incremental Build of configuration Debug for project Nap ****
+20:15:36 **** Incremental Build of configuration Debug for project Nap ****
 make -j8 all 
 arm-none-eabi-size   Nap.elf 
    text	   data	    bss	    dec	    hex	filename
