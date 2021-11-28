@@ -10,7 +10,7 @@
 #include <string.h>
 #ifndef SRC_MATRIX_SOLVER_H_
 #define SRC_MATRIX_SOLVER_H_
-void Solver(int Dau ,int Cuoi,char *takeResult);
+void Solver(int Dau, int Cuoi, int Truoc, char *takeResult, int Step[6][99]);
 
 
 #endif /* SRC_MATRIX_SOLVER_H_ */

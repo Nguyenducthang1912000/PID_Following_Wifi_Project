@@ -162,6 +162,7 @@ char string_2[1];
 char PID_Rx[12];
 char kp_val[10], ki_val[10], kd_val[10];
 char Rx_Buffer[RECEIVE_BUFF_SIZE],Rx_Buffer_copied[RECEIVE_BUFF_SIZE];
+char Step[6][99];
 unsigned long previousMillis = 0;
 unsigned long time;
 
@@ -965,9 +966,15 @@ void Running(void) // Activate the car for running
 		Temp_Line = (LineDetect & 0b10000100);
 		if(Temp_Line == 0b00000100)
 		{
-			Right_Turn();
+			Flag_u8 = TURN_RIGHT;
+			HAL_Delay(50);
+			Sensor_Convert_A2D();
+			if(LineDetect == 0)
+			{
+				Right_Turn();
+			}
 		}
-		else if(Temp_Line = 0b10000000)
+		else if(Temp_Line == 0b10000000)
 		{
 			Flag_u8 = TURN_LEFT;
 			HAL_Delay(50);
@@ -995,6 +1002,7 @@ void Running(void) // Activate the car for running
 		{
 			Left_Turn_Ngaba();
 		}
+		Flag_u8 = LINE_MIDDLE;
 		Error_Val = 13;
 		Sensor_Convert_A2D();
 		Error_Val = Error_Return(LineDetect);
@@ -1033,10 +1041,9 @@ void Running(void) // Activate the car for running
 }
 void Left_Turn()
 {
-	uint8_t Run_while = 1;
-	while(Run_while)
+	uint8_t Turn_process = 1;
+	while(Turn_process)
 	{
-		Error_Val = 20;
 		Sensor_Convert_A2D();
 		int16_t PID_Val = Line_Follower_PID(3500,3500,&Car);
 		Motor_Speed_R = (Right + PID_Val);
@@ -1051,13 +1058,13 @@ void Left_Turn()
 			if((LineDetect & 0b10000000) == 0b00000000){
 				while(1)
 				{
-					Error_Val = 30;
 					Sensor_Convert_A2D();
-					MotorR_SetPWM(4100);
+					MotorR_SetPWM(4800);
 					MotorL_SetPWM(-3500);
 					if(LineDetect == 0b00110000)
 					{
-						Run_while = 0;
+						Sensor_Convert_A2D();
+						Turn_process = 0;
 						Flag_u8 = LINE_MIDDLE;
 						break;
 					}
@@ -1069,19 +1076,49 @@ void Left_Turn()
 void Left_Turn_Ngaba()
 {
 	Sensor_Convert_A2D();
-	MotorR_SetPWM(4000);
+	MotorR_SetPWM(4800);
 	MotorL_SetPWM(-3000);
 	HAL_Delay(20);
-	while(LineDetect != 0b10000000)
+	while((LineDetect & 0b11000000) < 64)
 	{
 		Sensor_Convert_A2D();
-		MotorR_SetPWM(4000);
-		MotorL_SetPWM(-3000);
+		MotorR_SetPWM(6600);
+		MotorL_SetPWM(-4000);
 	}
+	Flag_u8 = LINE_MIDDLE;
 }
 void Right_Turn()
 {
-
+	uint8_t Turn_process = 1;
+	while(Turn_process)
+	{
+		Sensor_Convert_A2D();
+		int16_t PID_Val = Line_Follower_PID(3500,3500,&Car);
+		Motor_Speed_R = (Right + PID_Val);
+		Motor_Speed_L = (Left - PID_Val);
+		Motor_Speed_R = Constraint(Motor_Speed_R, -MAXSPEED_RIGHT,MAXSPEED_RIGHT);
+		Motor_Speed_L = Constraint(Motor_Speed_L, -MAXSPEED_LEFT,MAXSPEED_LEFT);
+		MotorR_SetPWM(Motor_Speed_R);
+		MotorL_SetPWM(Motor_Speed_L);
+		if((LineDetect & 0b10000000) != 0b10000000)
+		{
+			Sensor_Convert_A2D();
+			if((LineDetect & 0b10000000) == 0b00000000){
+				while(1)
+				{
+					Sensor_Convert_A2D();
+					MotorL_SetPWM(4500);
+					MotorR_SetPWM(-3500);
+					if(LineDetect == 0b00110000)
+					{
+						Turn_process = 0;
+						Flag_u8 = LINE_MIDDLE;
+						break;
+					}
+				}
+			}
+		}
+	}
 }
 void Turn_180_Deg()
 {

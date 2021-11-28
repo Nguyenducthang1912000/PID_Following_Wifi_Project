@@ -31,5 +31,6 @@ extern int16_t Left, Right;
 extern uint16_t Sensor_Threshold[6];
 extern uint16_t Sensor_ADC_Value[6];
 
-
+/* Step for running --------------------------------------------------------*/
+extern char Step[6][99];
 #endif /* SRC_MENU_H_ */

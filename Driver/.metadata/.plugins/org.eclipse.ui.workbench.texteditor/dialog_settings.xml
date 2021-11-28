@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value=""/>
+		<item key="selection" value="Left_Turn_Ngaba"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="Left_Turn_Ngaba"/>
 			<item value="0.94"/>
 			<item value="Kp"/>
 			<item value="6.4"/>
@@ -22,7 +23,6 @@
 			<item value="ID_PID_MESS"/>
 			<item value="STS_message_ID"/>
 			<item value="ID_STATUS_MESS"/>
-			<item value="FIRST_LAST_message_ID"/>
 		</list>
 		<list key="replacehistory">
 			<item value="RECEIVE_BUFF_SIZE"/>

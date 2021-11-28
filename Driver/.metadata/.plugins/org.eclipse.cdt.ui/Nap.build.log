@@ -1,10 +1,10 @@
-20:06:00 **** Incremental Build of configuration Debug for project Nap ****
+19:41:30 **** Incremental Build of configuration Debug for project Nap ****
 make -j8 all 
 arm-none-eabi-size   Nap.elf 
    text	   data	    bss	    dec	    hex	filename
-  61940	    572	   2868	  65380	   ff64	Nap.elf
+  64460	    572	   3460	  68492	  10b8c	Nap.elf
 Finished building: default.size.stdout
  
 
-20:06:01 Build Finished. 0 errors, 0 warnings. (took 324ms)
+19:41:31 Build Finished. 0 errors, 0 warnings. (took 322ms)
 
