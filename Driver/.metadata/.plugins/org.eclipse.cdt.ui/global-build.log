@@ -1,6 +1,96 @@
-20:15:25 **** Incremental Build of configuration Debug for project Nap ****
+00:04:15 **** Incremental Build of configuration Debug for project Nap ****
 make -j8 all 
+arm-none-eabi-gcc "../Core/Src/DISPLAY_MENU.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/DISPLAY_MENU.d" -MT"Core/Src/DISPLAY_MENU.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/DISPLAY_MENU.o"
+arm-none-eabi-gcc "../Core/Src/FLASH_SECTOR.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/FLASH_SECTOR.d" -MT"Core/Src/FLASH_SECTOR.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/FLASH_SECTOR.o"
+arm-none-eabi-gcc "../Core/Src/HAL_I2C_LCD.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/HAL_I2C_LCD.d" -MT"Core/Src/HAL_I2C_LCD.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/HAL_I2C_LCD.o"
+arm-none-eabi-gcc "../Core/Src/HAL_MOTOR_CONTROL.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/HAL_MOTOR_CONTROL.d" -MT"Core/Src/HAL_MOTOR_CONTROL.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/HAL_MOTOR_CONTROL.o"
+arm-none-eabi-gcc "../Core/Src/Matrix_solver.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/Matrix_solver.d" -MT"Core/Src/Matrix_solver.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/Matrix_solver.o"
+arm-none-eabi-gcc "../Core/Src/PID.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/PID.d" -MT"Core/Src/PID.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/PID.o"
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/stm32f4xx_hal_msp.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f4xx_hal_msp.d" -MT"Core/Src/stm32f4xx_hal_msp.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32f4xx_hal_msp.o"
+../Core/Src/Matrix_solver.c: In function 'Solver':
+../Core/Src/Matrix_solver.c:269:40: warning: initializer-string for array of chars is too long
+  269 |     char control[6][10] = {"di thang", "quay 180 di thang", "quay 180,di thang phai", "thang phai", "thang trai", "quay 180,di thang trai"};
+      |                                        ^~~~~~~~~~~~~~~~~~~
+../Core/Src/Matrix_solver.c:269:40: note: (near initialization for 'control[1]')
+../Core/Src/Matrix_solver.c:269:61: warning: initializer-string for array of chars is too long
+  269 |     char control[6][10] = {"di thang", "quay 180 di thang", "quay 180,di thang phai", "thang phai", "thang trai", "quay 180,di thang trai"};
+      |                                                             ^~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/Matrix_solver.c:269:61: note: (near initialization for 'control[2]')
+../Core/Src/Matrix_solver.c:269:115: warning: initializer-string for array of chars is too long
+  269 |     char control[6][10] = {"di thang", "quay 180 di thang", "quay 180,di thang phai", "thang phai", "thang trai", "quay 180,di thang trai"};
+      |                                                                                                                   ^~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/Matrix_solver.c:269:115: note: (near initialization for 'control[5]')
+../Core/Src/Matrix_solver.c:254:10: warning: unused variable 'concat_buffer' [-Wunused-variable]
+  254 |     char concat_buffer[20] = {0};
+      |          ^~~~~~~~~~~~~
+../Core/Src/Matrix_solver.c:253:10: warning: unused variable 'buffer' [-Wunused-variable]
+  253 |     char buffer[5] = {0};
+      |          ^~~~~~
+../Core/Src/Matrix_solver.c: In function 'GetString':
+../Core/Src/Matrix_solver.c:290:36: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  290 |             sprintf(buffer, "%d -> ", Input[i]);
+      |                                    ^
+../Core/Src/Matrix_solver.c:290:13: note: 'sprintf' output between 6 and 16 bytes into a destination of size 5
+  290 |             sprintf(buffer, "%d -> ", Input[i]);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/DISPLAY_MENU.c: In function 'Saving_Process':
+../Core/Src/DISPLAY_MENU.c:444:32: warning: passing argument 2 of 'Flash_Write_Data' from incompatible pointer type [-Wincompatible-pointer-types]
+  444 |   Flash_Write_Data(0x08020000, string);
+      |                                ^~~~~~
+      |                                |
+      |                                char *
+In file included from ../Core/Inc/main.h:43,
+                 from ../Core/Src/DISPLAY_MENU.c:7:
+../Core/Inc/FLASH_SECTOR.h:11:68: note: expected 'uint32_t *' {aka 'long unsigned int *'} but argument is of type 'char *'
+   11 | uint32_t Flash_Write_Data (uint32_t StartSectorAddress, uint32_t * DATA_32);
+      |                                                         ~~~~~~~~~~~^~~~~~~
+../Core/Src/FLASH_SECTOR.c: In function 'Flash_Write_Data':
+../Core/Src/FLASH_SECTOR.c:168:30: warning: passing argument 1 of 'strlen' from incompatible pointer type [-Wincompatible-pointer-types]
+  168 |  int numberofwords = (strlen(DATA_32)/4) + ((strlen(DATA_32) % 4) != 0);
+      |                              ^~~~~~~
+      |                              |
+      |                              uint32_t * {aka long unsigned int *}
+In file included from ../Core/Inc/main.h:36,
+                 from ../Core/Inc/FLASH_SECTOR.h:7,
+                 from ../Core/Src/FLASH_SECTOR.c:10:
+c:\st\stm32cubeide_1.5.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_2.0.0.202105311346\tools\arm-none-eabi\include\string.h:41:17: note: expected 'const char *' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+   41 | size_t  strlen (const char *);
+      |                 ^~~~~~~~~~~~
+../Core/Src/FLASH_SECTOR.c:168:53: warning: passing argument 1 of 'strlen' from incompatible pointer type [-Wincompatible-pointer-types]
+  168 |  int numberofwords = (strlen(DATA_32)/4) + ((strlen(DATA_32) % 4) != 0);
+      |                                                     ^~~~~~~
+      |                                                     |
+      |                                                     uint32_t * {aka long unsigned int *}
+In file included from ../Core/Inc/main.h:36,
+                 from ../Core/Inc/FLASH_SECTOR.h:7,
+                 from ../Core/Src/FLASH_SECTOR.c:10:
+c:\st\stm32cubeide_1.5.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_2.0.0.202105311346\tools\arm-none-eabi\include\string.h:41:17: note: expected 'const char *' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+   41 | size_t  strlen (const char *);
+      |                 ^~~~~~~~~~~~
+../Core/Src/FLASH_SECTOR.c: In function 'Convert_To_Str':
+../Core/Src/FLASH_SECTOR.c:240:31: warning: passing argument 1 of 'strlen' from incompatible pointer type [-Wincompatible-pointer-types]
+  240 |  int numberofbytes = ((strlen(data)/4) + ((strlen(data) % 4) != 0)) *4;
+      |                               ^~~~
+      |                               |
+      |                               uint32_t * {aka long unsigned int *}
+In file included from ../Core/Inc/main.h:36,
+                 from ../Core/Inc/FLASH_SECTOR.h:7,
+                 from ../Core/Src/FLASH_SECTOR.c:10:
+c:\st\stm32cubeide_1.5.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_2.0.0.202105311346\tools\arm-none-eabi\include\string.h:41:17: note: expected 'const char *' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+   41 | size_t  strlen (const char *);
+      |                 ^~~~~~~~~~~~
+../Core/Src/FLASH_SECTOR.c:240:51: warning: passing argument 1 of 'strlen' from incompatible pointer type [-Wincompatible-pointer-types]
+  240 |  int numberofbytes = ((strlen(data)/4) + ((strlen(data) % 4) != 0)) *4;
+      |                                                   ^~~~
+      |                                                   |
+      |                                                   uint32_t * {aka long unsigned int *}
+In file included from ../Core/Inc/main.h:36,
+                 from ../Core/Inc/FLASH_SECTOR.h:7,
+                 from ../Core/Src/FLASH_SECTOR.c:10:
+c:\st\stm32cubeide_1.5.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_2.0.0.202105311346\tools\arm-none-eabi\include\string.h:41:17: note: expected 'const char *' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+   41 | size_t  strlen (const char *);
+      |                 ^~~~~~~~~~~~
 ../Core/Src/main.c: In function 'HAL_UART_RxCpltCallback':
 ../Core/Src/main.c:238:30: warning: pointer targets in passing argument 2 of 'HAL_UART_Transmit' differ in signedness [-Wpointer-sign]
   238 |   HAL_UART_Transmit(&huart6, Error_Str, sizeof(Error_Str), 5000);
@@ -152,6 +242,7 @@ At top level:
 ../Core/Src/main.c:1200:13: warning: 'Sensor_Print_LineDetect' defined but not used [-Wunused-function]
  1200 | static void Sensor_Print_LineDetect()
       |             ^~~~~~~~~~~~~~~~~~~~~~~
+arm-none-eabi-gcc "../Core/Src/stm32f4xx_it.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f4xx_it.d" -MT"Core/Src/stm32f4xx_it.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32f4xx_it.o"
 arm-none-eabi-gcc -o "Nap.elf" @"objects.list"   -mcpu=cortex-m4 -T"D:\Baocaokhoaluan_BK\Driver\Nap\STM32F401CCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Nap.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: Nap.elf
  
@@ -159,17 +250,53 @@ arm-none-eabi-size   Nap.elf
 arm-none-eabi-objdump -h -S  Nap.elf  > "Nap.list"
 arm-none-eabi-objcopy  -O binary  Nap.elf  "Nap.bin"
    text	   data	    bss	    dec	    hex	filename
-  64460	    572	   3460	  68492	  10b8c	Nap.elf
+  63740	    572	   3460	  67772	  108bc	Nap.elf
 Finished building: default.size.stdout
  
 Finished building: Nap.bin
  
 Finished building: Nap.list
  
-20:15:36 **** Incremental Build of configuration Debug for project Nap ****
+00:04:50 **** Incremental Build of configuration Debug for project Nap ****
 make -j8 all 
+arm-none-eabi-gcc "../Core/Src/Matrix_solver.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/Matrix_solver.d" -MT"Core/Src/Matrix_solver.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/Matrix_solver.o"
+../Core/Src/Matrix_solver.c: In function 'Solver':
+../Core/Src/Matrix_solver.c:269:40: warning: initializer-string for array of chars is too long
+  269 |     char control[6][10] = {"di thang", "quay 180 di thang", "quay 180,di thang phai", "thang phai", "thang trai", "quay 180,di thang trai"};
+      |                                        ^~~~~~~~~~~~~~~~~~~
+../Core/Src/Matrix_solver.c:269:40: note: (near initialization for 'control[1]')
+../Core/Src/Matrix_solver.c:269:61: warning: initializer-string for array of chars is too long
+  269 |     char control[6][10] = {"di thang", "quay 180 di thang", "quay 180,di thang phai", "thang phai", "thang trai", "quay 180,di thang trai"};
+      |                                                             ^~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/Matrix_solver.c:269:61: note: (near initialization for 'control[2]')
+../Core/Src/Matrix_solver.c:269:115: warning: initializer-string for array of chars is too long
+  269 |     char control[6][10] = {"di thang", "quay 180 di thang", "quay 180,di thang phai", "thang phai", "thang trai", "quay 180,di thang trai"};
+      |                                                                                                                   ^~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/Matrix_solver.c:269:115: note: (near initialization for 'control[5]')
+../Core/Src/Matrix_solver.c:254:10: warning: unused variable 'concat_buffer' [-Wunused-variable]
+  254 |     char concat_buffer[20] = {0};
+      |          ^~~~~~~~~~~~~
+../Core/Src/Matrix_solver.c:253:10: warning: unused variable 'buffer' [-Wunused-variable]
+  253 |     char buffer[5] = {0};
+      |          ^~~~~~
+../Core/Src/Matrix_solver.c: In function 'GetString':
+../Core/Src/Matrix_solver.c:290:36: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  290 |             sprintf(buffer, "%d -> ", Input[i]);
+      |                                    ^
+../Core/Src/Matrix_solver.c:290:13: note: 'sprintf' output between 6 and 16 bytes into a destination of size 5
+  290 |             sprintf(buffer, "%d -> ", Input[i]);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arm-none-eabi-gcc -o "Nap.elf" @"objects.list"   -mcpu=cortex-m4 -T"D:\Baocaokhoaluan_BK\Driver\Nap\STM32F401CCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Nap.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Nap.elf
+ 
 arm-none-eabi-size   Nap.elf 
+arm-none-eabi-objdump -h -S  Nap.elf  > "Nap.list"
+arm-none-eabi-objcopy  -O binary  Nap.elf  "Nap.bin"
    text	   data	    bss	    dec	    hex	filename
-  64460	    572	   3460	  68492	  10b8c	Nap.elf
+  63740	    572	   3460	  67772	  108bc	Nap.elf
 Finished building: default.size.stdout
+ 
+Finished building: Nap.bin
+ 
+Finished building: Nap.list
  

@@ -1,10 +1,46 @@
-20:15:36 **** Incremental Build of configuration Debug for project Nap ****
+00:04:50 **** Incremental Build of configuration Debug for project Nap ****
 make -j8 all 
+arm-none-eabi-gcc "../Core/Src/Matrix_solver.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/Matrix_solver.d" -MT"Core/Src/Matrix_solver.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/Matrix_solver.o"
+../Core/Src/Matrix_solver.c: In function 'Solver':
+../Core/Src/Matrix_solver.c:269:40: warning: initializer-string for array of chars is too long
+  269 |     char control[6][10] = {"di thang", "quay 180 di thang", "quay 180,di thang phai", "thang phai", "thang trai", "quay 180,di thang trai"};
+      |                                        ^~~~~~~~~~~~~~~~~~~
+../Core/Src/Matrix_solver.c:269:40: note: (near initialization for 'control[1]')
+../Core/Src/Matrix_solver.c:269:61: warning: initializer-string for array of chars is too long
+  269 |     char control[6][10] = {"di thang", "quay 180 di thang", "quay 180,di thang phai", "thang phai", "thang trai", "quay 180,di thang trai"};
+      |                                                             ^~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/Matrix_solver.c:269:61: note: (near initialization for 'control[2]')
+../Core/Src/Matrix_solver.c:269:115: warning: initializer-string for array of chars is too long
+  269 |     char control[6][10] = {"di thang", "quay 180 di thang", "quay 180,di thang phai", "thang phai", "thang trai", "quay 180,di thang trai"};
+      |                                                                                                                   ^~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/Matrix_solver.c:269:115: note: (near initialization for 'control[5]')
+../Core/Src/Matrix_solver.c:254:10: warning: unused variable 'concat_buffer' [-Wunused-variable]
+  254 |     char concat_buffer[20] = {0};
+      |          ^~~~~~~~~~~~~
+../Core/Src/Matrix_solver.c:253:10: warning: unused variable 'buffer' [-Wunused-variable]
+  253 |     char buffer[5] = {0};
+      |          ^~~~~~
+../Core/Src/Matrix_solver.c: In function 'GetString':
+../Core/Src/Matrix_solver.c:290:36: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  290 |             sprintf(buffer, "%d -> ", Input[i]);
+      |                                    ^
+../Core/Src/Matrix_solver.c:290:13: note: 'sprintf' output between 6 and 16 bytes into a destination of size 5
+  290 |             sprintf(buffer, "%d -> ", Input[i]);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arm-none-eabi-gcc -o "Nap.elf" @"objects.list"   -mcpu=cortex-m4 -T"D:\Baocaokhoaluan_BK\Driver\Nap\STM32F401CCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Nap.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Nap.elf
+ 
 arm-none-eabi-size   Nap.elf 
+arm-none-eabi-objdump -h -S  Nap.elf  > "Nap.list"
+arm-none-eabi-objcopy  -O binary  Nap.elf  "Nap.bin"
    text	   data	    bss	    dec	    hex	filename
-  64460	    572	   3460	  68492	  10b8c	Nap.elf
+  63740	    572	   3460	  67772	  108bc	Nap.elf
 Finished building: default.size.stdout
  
+Finished building: Nap.bin
+ 
+Finished building: Nap.list
+ 
 
-20:15:36 Build Finished. 0 errors, 0 warnings. (took 325ms)
+00:04:51 Build Finished. 0 errors, 6 warnings. (took 1s.532ms)
 

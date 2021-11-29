@@ -1,4 +1,5 @@
-Matrix_solver.c:12:6:Control_File	32	static
-Matrix_solver.c:205:5:Dijkstra	960	static
-Matrix_solver.c:247:6:Control	32	static
-Matrix_solver.c:253:6:Solver	491456	static
+Matrix_solver.c:4:6:Control_File	32	static
+Matrix_solver.c:196:5:Dijkstra	168	static
+Matrix_solver.c:238:6:Control	32	static
+Matrix_solver.c:251:5:Solver	7776	static
+Matrix_solver.c:277:6:GetString	56	static
