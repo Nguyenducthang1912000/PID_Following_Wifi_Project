@@ -327,7 +327,7 @@ static void LineDetect_show(void) {
 	lcd_send_cmd(0x80 | 0x40);
 	lcd_send_string("Press C for cancel ");
 	while (cancel_menu) {
-		for (int i = 0; i < 6; i++) {
+		for (int8_t i = 0; i < 6; i++) {
 #ifdef READ_WHITE_LINE
 			if (Sensor_ADC_Value[0] < Sensor_Threshold[0]) {
 				lcd_send_cmd(0x80 | 0x16);
@@ -458,7 +458,7 @@ static void Path_Solver(uint8_t line)
 			sprintf(First_str, ">First Point: %2d  ", First_point);
 			lcd_send_cmd(0x80 | 0x00);
 			lcd_send_string(First_str);
-			sprintf(Last_str, " Last Point: %2d  ", Last_point);
+			sprintf(Last_str, " Last Point: %2d    ", Last_point);
 			lcd_send_cmd(0x80 | 0x40);
 			lcd_send_string(Last_str);
 			lcd_send_cmd(0x80 | 0x14);
@@ -470,7 +470,7 @@ static void Path_Solver(uint8_t line)
 			sprintf(First_str, " First Point: %2d  ", First_point);
 			lcd_send_cmd(0x80 | 0x00);
 			lcd_send_string(First_str);
-			sprintf(Last_str, ">Last Point: %2d  ", Last_point);
+			sprintf(Last_str, ">Last Point: %2d    ", Last_point);
 			lcd_send_cmd(0x80 | 0x40);
 			lcd_send_string(Last_str);
 			lcd_send_cmd(0x80 | 0x14);
@@ -482,7 +482,7 @@ static void Path_Solver(uint8_t line)
 			sprintf(First_str, " First Point: %2d  ", First_point);
 			lcd_send_cmd(0x80 | 0x00);
 			lcd_send_string(First_str);
-			sprintf(Last_str, " Last Point: %2d  ", Last_point);
+			sprintf(Last_str, " Last Point: %2d    ", Last_point);
 			lcd_send_cmd(0x80 | 0x40);
 			lcd_send_string(Last_str);
 			lcd_send_cmd(0x80 | 0x14);
@@ -491,10 +491,10 @@ static void Path_Solver(uint8_t line)
 			lcd_send_string(" Return to main menu");
 			break;
 		case 4:
-			sprintf(First_str, " First Point: %2d  ", First_point);
+			sprintf(First_str, " First Point: %2d   ", First_point);
 			lcd_send_cmd(0x80 | 0x00);
 			lcd_send_string(First_str);
-			sprintf(Last_str, " Last Point: %2d  ", Last_point);
+			sprintf(Last_str, " Last Point: %2d     ", Last_point);
 			lcd_send_cmd(0x80 | 0x40);
 			lcd_send_string(Last_str);
 			lcd_send_cmd(0x80 | 0x14);
@@ -506,10 +506,10 @@ static void Path_Solver(uint8_t line)
 }
 static void Path_show(void)
 {
-	int getResult[20],getStep[12];
+	int getResult[4],getStep[4];
 	char getPath_str[20];
 	int length;
-	length = Solver(First_point, Last_point, 7, getResult, getStep);
+	length = Solver(First_point, Last_point, 12, getResult, getStep);
 	GetString(getStep, getPath_str, length);
 	lcd_send_cmd(0x80 | 0x00);
 	lcd_send_string("Path direction      ");

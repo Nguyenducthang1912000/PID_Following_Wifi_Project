@@ -162,7 +162,6 @@ char string_2[1];
 char PID_Rx[12];
 char kp_val[10], ki_val[10], kd_val[10];
 char Rx_Buffer[RECEIVE_BUFF_SIZE],Rx_Buffer_copied[RECEIVE_BUFF_SIZE];
-char Step[6][99];
 unsigned long previousMillis = 0;
 unsigned long time;
 
@@ -948,91 +947,84 @@ void Running(void) // Activate the car for running
 	Previous_Line = LINE_MIDDLE;
 	while (cancel_running) {
 /*======================== CACULATING SPEED EACH 300ms ============================================*/
-	unsigned long currentMillis  = HAL_GetTick();
-	Encoder_Read();
-	if(currentMillis  - previousMillis  >= interval)
-	{
-		previousMillis  = previousMillis;
-		rateLeft = (countLeft - countLeft_prv)*1345/374;
-		rateRight = (countRight - countRight_prv)*1345/374;
-		countLeft_prv = countLeft;
-		countRight_prv = countRight;
-	}
-	Sensor_Convert_A2D();
-	Temp_Line = (LineDetect & 0b10000100);
-	if(Temp_Line == 0b10000000 || Temp_Line == 0b00000100)
-	{
+		unsigned long currentMillis  = HAL_GetTick();
+		Encoder_Read();
+		if(currentMillis  - previousMillis  >= interval)
+		{
+			previousMillis  = previousMillis;
+			rateLeft = (countLeft - countLeft_prv)*1345/374;
+			rateRight = (countRight - countRight_prv)*1345/374;
+			countLeft_prv = countLeft;
+			countRight_prv = countRight;
+		}
 		Sensor_Convert_A2D();
 		Temp_Line = (LineDetect & 0b10000100);
-		if(Temp_Line == 0b00000100)
+		if(Temp_Line == 0b10000000 || Temp_Line == 0b00000100)
 		{
-			Flag_u8 = TURN_RIGHT;
-			HAL_Delay(50);
 			Sensor_Convert_A2D();
-			if(LineDetect == 0)
+			Temp_Line = (LineDetect & 0b10000100);
+			if(Temp_Line == 0b00000100)
 			{
-				Right_Turn();
+				Flag_u8 = TURN_RIGHT;
+				HAL_Delay(50);
+				Sensor_Convert_A2D();
+				if(LineDetect == 0)
+				{
+					Right_Turn();
+				}
+			}
+			else if(Temp_Line == 0b10000000)
+			{
+				Flag_u8 = TURN_LEFT;
+				HAL_Delay(50);
+				Sensor_Convert_A2D();
+				if(LineDetect == 0)
+				{
+					Left_Turn();
+				}
 			}
 		}
-		else if(Temp_Line == 0b10000000)
+
+	/* Truong hop xe chay line giua ---------------------------------------*/
+		else if (Temp_Line == 0b00000000)
 		{
-			Flag_u8 = TURN_LEFT;
-			HAL_Delay(50);
-			Sensor_Convert_A2D();
-			if(LineDetect == 0)
+			if(Flag_u8 == TURN_LEFT)
 			{
-				Left_Turn();
+				Left_Turn_Ngaba();
 			}
+			else if(Flag_u8 == TURN_RIGHT)
+			{
+				Right_Turn_Ngaba();
+			}
+			Flag_u8 = LINE_MIDDLE;
+			Error_Val = 13;
+			Sensor_Convert_A2D();
+			Error_Val = Error_Return(LineDetect);
+			int16_t PID_Val = Line_Follower_PID(3500,Error_Val,&Car);
+			Motor_Speed_R = (Right + PID_Val);
+			Motor_Speed_L = (Left - PID_Val);
+			Motor_Speed_R = Constraint(Motor_Speed_R, -MAXSPEED_RIGHT,MAXSPEED_RIGHT);
+			Motor_Speed_L = Constraint(Motor_Speed_L, -MAXSPEED_LEFT,MAXSPEED_LEFT);
+			MotorR_SetPWM(Motor_Speed_R);
+			MotorL_SetPWM(Motor_Speed_L);
 		}
-	}
-//	else if(Temp_Line == 0b10000100)
-//	{
-//		Error_Val = 12;
-//		int16_t PID_Val = Line_Follower_PID(3500,3500,&Car);
-//		Motor_Speed_R = (Right + PID_Val);
-//		Motor_Speed_L = (Left - PID_Val);
-//		Motor_Speed_R = Constraint(Motor_Speed_R, -MAXSPEED_RIGHT,MAXSPEED_RIGHT);
-//		Motor_Speed_L = Constraint(Motor_Speed_L, -MAXSPEED_LEFT,MAXSPEED_LEFT);
-//	}
 
-/* Truong hop xe chay line giua ---------------------------------------*/
-	else if (Temp_Line == 0b00000000)
-	{
-		if(Flag_u8 == TURN_LEFT)
+		if(Status == 0)
 		{
-			Left_Turn_Ngaba();
+			Trans_flag = DATA_TRANS_DIS;
+			lcd_send_cmd(0x80 | 0x00);
+			lcd_send_string("Car is Pause        ");
+			MotorR_SetPWM(0);
+			MotorL_SetPWM(0);
 		}
-		Flag_u8 = LINE_MIDDLE;
-		Error_Val = 13;
-		Sensor_Convert_A2D();
-		Error_Val = Error_Return(LineDetect);
-		int16_t PID_Val = Line_Follower_PID(3500,Error_Val,&Car);
-		Motor_Speed_R = (Right + PID_Val);
-		Motor_Speed_L = (Left - PID_Val);
-		Motor_Speed_R = Constraint(Motor_Speed_R, -MAXSPEED_RIGHT,MAXSPEED_RIGHT);
-		Motor_Speed_L = Constraint(Motor_Speed_L, -MAXSPEED_LEFT,MAXSPEED_LEFT);
-		MotorR_SetPWM(Motor_Speed_R);
-		MotorL_SetPWM(Motor_Speed_L);
-	}
-
-	if(Status == 0)
-	{
-		Trans_flag = DATA_TRANS_DIS;
-		lcd_send_cmd(0x80 | 0x00);
-		lcd_send_string("Car is Pause        ");
-		MotorR_SetPWM(0);
-		MotorL_SetPWM(0);
-	}
-	else
-	{
-		Trans_flag = DATA_TRANS_EN;
-		lcd_send_cmd(0x80 | 0x00);
-		lcd_send_string("Car is Running!        ");
-		MotorR_SetPWM(Motor_Speed_R);
-		MotorL_SetPWM(Motor_Speed_L);
-	}
-//	Sensor_Print_LineDetect();
-//	HAL_Delay(300);
+		else
+		{
+			Trans_flag = DATA_TRANS_EN;
+			lcd_send_cmd(0x80 | 0x00);
+			lcd_send_string("Car is Running!        ");
+			MotorR_SetPWM(Motor_Speed_R);
+			MotorL_SetPWM(Motor_Speed_L);
+		}
 
 	}
 	MotorL_SetPWM(0);
@@ -1120,6 +1112,23 @@ void Right_Turn()
 				Flag_u8 = LINE_MIDDLE;
 			}
 		}
+	}
+}
+void Right_Turn_Ngaba()
+{
+	{
+		Sensor_Convert_A2D();
+		MotorL_SetPWM(4800);
+		MotorR_SetPWM(-3900);
+		while((LineDetect & 0b00001100) <= 8)
+		{
+			Sensor_Convert_A2D();
+		}
+		while(LineDetect != 0b00110000)
+		{
+			Sensor_Convert_A2D();
+		}
+		Flag_u8 = LINE_MIDDLE;
 	}
 }
 void Turn_180_Deg()
