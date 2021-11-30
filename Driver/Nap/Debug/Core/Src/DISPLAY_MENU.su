@@ -7,5 +7,5 @@ DISPLAY_MENU.c:324:13:LineDetect_show	16	static
 DISPLAY_MENU.c:436:13:Saving_Process	8	static
 DISPLAY_MENU.c:448:13:Wifi_Connect_establish	8	static
 DISPLAY_MENU.c:454:13:Path_Solver	16	static
-DISPLAY_MENU.c:507:13:Path_show	72	static
-DISPLAY_MENU.c:521:6:executeAction	16	static
+DISPLAY_MENU.c:507:13:Path_show	32	static
+DISPLAY_MENU.c:518:6:executeAction	16	static

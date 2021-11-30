@@ -506,11 +506,8 @@ static void Path_Solver(uint8_t line)
 }
 static void Path_show(void)
 {
-	int getResult[4],getStep[4];
 	char getPath_str[20];
-	int length;
-	length = Solver(First_point, Last_point, 12, getResult, getStep);
-	GetString(getStep, getPath_str, length);
+	GetString(First_point, Last_point, getPath_str);
 	lcd_send_cmd(0x80 | 0x00);
 	lcd_send_string("Path direction      ");
 	lcd_send_cmd(0x80 | 0x40);

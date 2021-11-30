@@ -2,4 +2,4 @@ Matrix_solver.c:3:13:Control_File	24	static
 Matrix_solver.c:195:12:Dijkstra	160	static
 Matrix_solver.c:237:13:Control	32	static
 Matrix_solver.c:250:8:Solver	7736	static
-Matrix_solver.c:276:6:GetString	56	static
+Matrix_solver.c:285:6:GetString	80	static

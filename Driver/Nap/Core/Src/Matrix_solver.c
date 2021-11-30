@@ -247,7 +247,7 @@ static void Control(int C[12][12][12], char control[6][3], int result[4], int le
         truoc = result[i];
     }
 }
-int8_t Solver(int Dau, int Cuoi, int Truoc, int takeResult[4], int Step[4])
+int8_t Solver(int Dau, int Cuoi, int Truoc, int takeResult[4], int Step[4], int Run_Str[8])
 {
     char buffer[5] = {0};
     char concat_buffer[20] = {0};
@@ -271,22 +271,33 @@ int8_t Solver(int Dau, int Cuoi, int Truoc, int takeResult[4], int Step[4])
     Control_File(C);
     int length = Dijkstra(A, 12, Dau, Cuoi, Step);
     Control(C, control, Step, length, controlArr, Truoc, takeResult);
+
+    Run_Str[0] = Step[0];
+	Run_Str[1] = takeResult[0];
+	Run_Str[2] = Step[1];
+	Run_Str[3] = takeResult[1];
+	Run_Str[4] = Step[2];
+	Run_Str[5] = takeResult[2];
+	Run_Str[6] = Step[3];
+	Run_Str[7] = takeResult[3];
     return length;
 }
-void GetString(int Input[4], char *Result, int length)
+void GetString(int8_t Dau,int8_t Cuoi ,char *Result)
 {
     char buffer[5] = {0};
     char concat_buffer[20] = {0};
+    int getStep[4];
+    int length = Solver(Dau,Cuoi,12,0,getStep,0);
     for (int8_t i = 0; i < length; i++)
     {
         if (i == length - 1)
         {
-            sprintf(buffer, "%d", Input[i]);
+            sprintf(buffer, "%d", getStep[i]);
             strcat(concat_buffer, buffer);
         }
         else
         {
-            sprintf(buffer, "%d -> ", Input[i]);
+            sprintf(buffer, "%d -> ", getStep[i]);
             strcat(concat_buffer, buffer);
         }
     }
