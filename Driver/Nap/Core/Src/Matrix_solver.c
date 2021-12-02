@@ -272,13 +272,13 @@ int8_t Solver(int Dau, int Cuoi, int Truoc, int takeResult[4], int Step[4], int 
     int length = Dijkstra(A, 12, Dau, Cuoi, Step);
     Control(C, control, Step, length, controlArr, Truoc, takeResult);
 
-    Run_Str[0] = Step[0];
+    Run_Str[0] = 7;
 	Run_Str[1] = takeResult[0];
-	Run_Str[2] = Step[1];
+	Run_Str[2] = 7;
 	Run_Str[3] = takeResult[1];
-	Run_Str[4] = Step[2];
+	Run_Str[4] = 7;
 	Run_Str[5] = takeResult[2];
-	Run_Str[6] = Step[3];
+	Run_Str[6] = 7;
 	Run_Str[7] = takeResult[3];
     return length;
 }

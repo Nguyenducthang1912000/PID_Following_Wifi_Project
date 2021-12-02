@@ -214,7 +214,7 @@ void SysTick_Handler(void)
 //		indx = 0;
 //	}
   /* USER CODE END SysTick_IRQn 0 */
-	HAL_IncTick();
+  HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
   /* USER CODE END SysTick_IRQn 1 */

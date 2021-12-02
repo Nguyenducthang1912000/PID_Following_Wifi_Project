@@ -83,8 +83,8 @@
 	/*		0			1			2			3			4			5		*/
 
 /* Max Speed Constrains ------------------------------------------------------*/
-#define MAXSPEED_RIGHT					3200
-#define MAXSPEED_LEFT					3390
+#define MAXSPEED_RIGHT					3300
+#define MAXSPEED_LEFT					3490
 
 /* Default PID ---------------------------------------------------------------*/
 #define DEFAULT_KP						36.42f
@@ -92,11 +92,19 @@
 #define DEFAULT_KD						2.3f
 
 /* Line Color ----------------------------------------------------------------*/
-#define LINE_HALF_BLACK					0U
-#define LINE_FULL_BLACK					1U
+#define LINE_HALF_BLACK					1U
+#define LINE_FULL_BLACK					2U
 #define LINE_MIDDLE						3U
+
+
+/* Instruction define --------------------------------------------------------*/
+#define TURN_SKIP_POINT					7U
+#define TURN_SKIP 						0U
+#define TURN_180DEG_STRAIGHT			1U
+#define TURN_180DEG_RIGHT				2U
+#define TURN_RIGHT						3U
 #define TURN_LEFT						4U
-#define TURN_RIGHT						5U
+#define TURN_180DEG_LEFT				5U
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -136,7 +144,7 @@ uint8_t Trans_flag = DATA_TRANS_DIS;
 uint8_t LCD_INIT_FLAG = 1;
 uint8_t Previous_Line = LINE_MIDDLE;
 uint8_t Flag_u8 = 0;
-int8_t First_point = 0,Last_point = 0;
+int8_t First_point = 0,Last_point = 0,Previous_point = 7;
 uint8_t count;
 int16_t Left = 3390, Right = 3200;
 int16_t positionLeft = 0, positionRight = 0;
@@ -940,93 +948,142 @@ static void MX_GPIO_Init(void)
 void Running(void) // Activate the car for running
 {
 	uint8_t Temp_Line;
+	int8_t point_passed = -1;
+	int Instruction[8];
+	int Map_Point[4],Turn_Instruction[4];
+	int8_t Max_point_temp,Max_point;
+	int8_t Spin_once = 0;
+	Max_point_temp = Solver(First_point, Last_point, Previous_point, Turn_Instruction, Map_Point, Instruction);
+	Max_point = Max_point_temp + (Max_point_temp - 1) - 1;
 	lcd_send_cmd(0x80 | 0x00);
 	lcd_send_string("Car is Running!        ");
 	lcd_send_cmd(0x80 | 0x40);
 	lcd_send_string("Press C for cancel     ");
 	Previous_Line = LINE_MIDDLE;
 	while (cancel_running) {
-/*======================== CACULATING SPEED EACH 300ms ============================================*/
-		unsigned long currentMillis  = HAL_GetTick();
-		Encoder_Read();
-		if(currentMillis  - previousMillis  >= interval)
-		{
-			previousMillis  = previousMillis;
-			rateLeft = (countLeft - countLeft_prv)*1345/374;
-			rateRight = (countRight - countRight_prv)*1345/374;
-			countLeft_prv = countLeft;
-			countRight_prv = countRight;
-		}
-		Sensor_Convert_A2D();
-		Temp_Line = (LineDetect & 0b10000100);
-		if(Temp_Line == 0b10000000 || Temp_Line == 0b00000100)
-		{
+	/*======================== CACULATING SPEED EACH 300ms ============================================*/
+			unsigned long currentMillis  = HAL_GetTick();
+			Encoder_Read();
+			if(currentMillis  - previousMillis  >= interval)
+			{
+				previousMillis  = previousMillis;
+				rateLeft = (countLeft - countLeft_prv)*1345/374;
+				rateRight = (countRight - countRight_prv)*1345/374;
+				countLeft_prv = countLeft;
+				countRight_prv = countRight;
+			}
 			Sensor_Convert_A2D();
+			Go_Straight();
 			Temp_Line = (LineDetect & 0b10000100);
-			if(Temp_Line == 0b00000100)
+			if(Temp_Line == 0b10000000 || Temp_Line == 0b00000100 || Temp_Line == 0b10000100)
 			{
-				Flag_u8 = TURN_RIGHT;
-				HAL_Delay(50);
 				Sensor_Convert_A2D();
-				if(LineDetect == 0)
+				Previous_Line = LINE_HALF_BLACK;
+				if(point_passed == Max_point - 1)
 				{
-					Right_Turn();
+					Max_point = 0;
+					First_point = Last_point;
+					Previous_point = Map_Point[Max_point_temp - 2];
+					Error_Val = Previous_point;
+					cancel_running = 0;
+				}
+				if(Spin_once == 0 && (Turn_Instruction[0] == TURN_180DEG_LEFT || Turn_Instruction[0] == TURN_180DEG_RIGHT || Turn_Instruction[0] == TURN_180DEG_STRAIGHT))
+				{
+					Turn_180_Deg();
+					Previous_Line = LINE_HALF_BLACK;
+					Spin_once = 1;
 				}
 			}
-			else if(Temp_Line == 0b10000000)
+
+		/* Truong hop xe chay line giua ---------------------------------------*/
+			else if (Temp_Line == 0b00000000)
 			{
-				Flag_u8 = TURN_LEFT;
-				HAL_Delay(50);
-				Sensor_Convert_A2D();
-				if(LineDetect == 0)
+				int8_t dem = 0;
+				if (Previous_Line == LINE_HALF_BLACK)
 				{
-					Left_Turn();
+					dem++;
+					Sensor_Convert_A2D();
+					Go_Straight();
+					if(dem = 50)
+					{
+						point_passed = point_passed + 1;
+						dem = 0;
+					}
+
+					//Noise canceling
+					else if(dem < 50)
+					{
+						Sensor_Convert_A2D();
+						if(LineDetect == 0b10000000 || LineDetect == 0b11000000 || LineDetect == 0b00000100 || LineDetect == 0b00000110 || LineDetect == 0b11100000 || LineDetect == 0b00011100)
+						{
+							continue;
+						}
+					}
+/*Step procesing BEGIN here */
+					if(point_passed < Max_point)
+					{
+						switch(Instruction[point_passed])
+						{
+						case TURN_SKIP_POINT:
+							Go_Straight();
+							break;
+						case TURN_LEFT:
+							Left_Turn_Ngaba();
+							break;
+						case TURN_RIGHT:
+							Right_Turn_Ngaba();
+							break;
+						case TURN_SKIP:
+							Go_Straight();
+							break;
+						case TURN_180DEG_LEFT:
+							Left_Turn_Ngaba();
+							break;
+						case TURN_180DEG_RIGHT:
+							Right_Turn_Ngaba();
+							break;
+						case TURN_180DEG_STRAIGHT:
+							Go_Straight();
+							break;
+;						}
+					}
+
+/*Step procesing END here */
+					Previous_Line = LINE_MIDDLE;
+				}
+
+				else if(Previous_Line == LINE_MIDDLE)
+				{
+				Sensor_Convert_A2D();
+				Error_Val = Error_Return(LineDetect);
+				int16_t PID_Val = Line_Follower_PID(3500,Error_Val,&Car);
+				Motor_Speed_R = (Right + PID_Val);
+				Motor_Speed_L = (Left - PID_Val);
+				Motor_Speed_R = Constraint(Motor_Speed_R, -MAXSPEED_RIGHT,MAXSPEED_RIGHT);
+				Motor_Speed_L = Constraint(Motor_Speed_L, -MAXSPEED_LEFT,MAXSPEED_LEFT);
+				MotorR_SetPWM(Motor_Speed_R);
+				MotorL_SetPWM(Motor_Speed_L);
 				}
 			}
-		}
 
-	/* Truong hop xe chay line giua ---------------------------------------*/
-		else if (Temp_Line == 0b00000000)
-		{
-			if(Flag_u8 == TURN_LEFT)
+			if(Status == 0)
 			{
-				Left_Turn_Ngaba();
+				Trans_flag = DATA_TRANS_DIS;
+				lcd_send_cmd(0x80 | 0x00);
+				lcd_send_string("Car is Pause        ");
+				MotorR_SetPWM(0);
+				MotorL_SetPWM(0);
 			}
-			else if(Flag_u8 == TURN_RIGHT)
+			else
 			{
-				Right_Turn_Ngaba();
+				Trans_flag = DATA_TRANS_EN;
+				lcd_send_cmd(0x80 | 0x00);
+				lcd_send_string("Car is Running!        ");
+				MotorR_SetPWM(Motor_Speed_R);
+				MotorL_SetPWM(Motor_Speed_L);
 			}
-			Flag_u8 = LINE_MIDDLE;
-			Error_Val = 13;
-			Sensor_Convert_A2D();
-			Error_Val = Error_Return(LineDetect);
-			int16_t PID_Val = Line_Follower_PID(3500,Error_Val,&Car);
-			Motor_Speed_R = (Right + PID_Val);
-			Motor_Speed_L = (Left - PID_Val);
-			Motor_Speed_R = Constraint(Motor_Speed_R, -MAXSPEED_RIGHT,MAXSPEED_RIGHT);
-			Motor_Speed_L = Constraint(Motor_Speed_L, -MAXSPEED_LEFT,MAXSPEED_LEFT);
-			MotorR_SetPWM(Motor_Speed_R);
-			MotorL_SetPWM(Motor_Speed_L);
-		}
 
-		if(Status == 0)
-		{
-			Trans_flag = DATA_TRANS_DIS;
-			lcd_send_cmd(0x80 | 0x00);
-			lcd_send_string("Car is Pause        ");
-			MotorR_SetPWM(0);
-			MotorL_SetPWM(0);
 		}
-		else
-		{
-			Trans_flag = DATA_TRANS_EN;
-			lcd_send_cmd(0x80 | 0x00);
-			lcd_send_string("Car is Running!        ");
-			MotorR_SetPWM(Motor_Speed_R);
-			MotorL_SetPWM(Motor_Speed_L);
-		}
-
-	}
 	MotorL_SetPWM(0);
 	MotorR_SetPWM(0);
 	lcd_clear();
@@ -1053,7 +1110,7 @@ void Left_Turn()
 					Sensor_Convert_A2D();
 					MotorR_SetPWM(4800);
 					MotorL_SetPWM(-3500);
-					if(LineDetect == 0b00011000)
+					if(LineDetect == 0b00010000)
 					{
 						Sensor_Convert_A2D();
 						Turn_process = 0;
@@ -1075,7 +1132,7 @@ void Left_Turn_Ngaba()
 	{
 		Sensor_Convert_A2D();
 	}
-	while(LineDetect != 0b00011000)
+	while(LineDetect != 0b00010000)
 	{
 		Sensor_Convert_A2D();
 	}
@@ -1103,7 +1160,7 @@ void Right_Turn()
 					Sensor_Convert_A2D();
 					MotorL_SetPWM(4500);
 					MotorR_SetPWM(-3500);
-					if(LineDetect == 0b00110000)
+					if(LineDetect == 0b00100000)
 					{
 						Turn_process = 0;
 						break;
@@ -1118,13 +1175,13 @@ void Right_Turn_Ngaba()
 {
 	{
 		Sensor_Convert_A2D();
-		MotorL_SetPWM(4800);
+		MotorL_SetPWM(5400);
 		MotorR_SetPWM(-3900);
 		while((LineDetect & 0b00001100) <= 8)
 		{
 			Sensor_Convert_A2D();
 		}
-		while(LineDetect != 0b00110000)
+		while(LineDetect != 0b00010000)
 		{
 			Sensor_Convert_A2D();
 		}
@@ -1133,19 +1190,47 @@ void Right_Turn_Ngaba()
 }
 void Turn_180_Deg()
 {
-
+	MotorL_SetPWM(6200);
+	MotorR_SetPWM(-6200);
+	while(LineDetect != 0b00000000)
+	{
+		Sensor_Convert_A2D();
+	}
+	while(LineDetect <= 3)
+	{
+		Sensor_Convert_A2D();
+	}
+	while(LineDetect != 0b00010000)
+	{
+		Sensor_Convert_A2D();
+	}
+}
+void Go_Straight()
+{
+	Sensor_Convert_A2D();
+	int16_t PID_Val = Line_Follower_PID(3500,3500,&Car);
+	Motor_Speed_R = (Right + PID_Val);
+	Motor_Speed_L = (Left - PID_Val);
+	Motor_Speed_R = Constraint(Motor_Speed_R, -MAXSPEED_RIGHT,MAXSPEED_RIGHT);
+	Motor_Speed_L = Constraint(Motor_Speed_L, -MAXSPEED_LEFT,MAXSPEED_LEFT);
+	MotorR_SetPWM(Motor_Speed_R);
+	MotorL_SetPWM(Motor_Speed_L);
 }
 static int Error_Return (uint8_t Sensor_Array){
 	switch(Sensor_Array){
 	case 0b00001000:
-		return 4000;
+		return 4300;
 		break;
 	case 0b00011000:
-		return 3800;
+		return 4000;
 		break;
 
 	case 0b00010000:
-		return 3600;
+		return 3800;
+		break;
+
+	case 0b00000000:
+		return 3500;
 		break;
 
 	case 0b00110000:
@@ -1157,10 +1242,10 @@ static int Error_Return (uint8_t Sensor_Array){
 		break;
 
 	case 0b01100000:
-		return 3300;
+		return 3000;
 		break;
 	case 0b01000000:
-		return 3250;
+		return 2600;
 		break;
 /*---------------------dont care------------------------*/
 	default:
