@@ -145,6 +145,7 @@ uint8_t LCD_INIT_FLAG = 1;
 uint8_t Previous_Line = LINE_MIDDLE;
 uint8_t Flag_u8 = 0;
 int8_t First_point = 0,Last_point = 0,Previous_point = 7;
+int8_t Begin_solving = 0;
 uint8_t count;
 int16_t Left = 3390, Right = 3200;
 int16_t positionLeft = 0, positionRight = 0;
@@ -158,7 +159,7 @@ volatile short rateLeft = 0, rateRight = 0;
 volatile short rateLeft_prv = 0, rateRight_prv = 0;
 
 
-const long interval = 300;
+const long interval = 70;
 uint8_t ID;
 int Motor_Speed_L,Motor_Speed_R;
 int Speed_Left = 0, Speed_Right = 0;
@@ -238,6 +239,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		char *Data2 = strtok(NULL," ");
 		First_point = atoi(Data1);
 		Last_point = atoi(Data2);
+		Begin_solving = 1;
 	}
 	else if(ID == DATA_ERROR_REQ && Trans_flag == DATA_TRANS_EN)
 	{
@@ -944,14 +946,15 @@ void Running(void) // Activate the car for running
 	int Map_Point[4],Turn_Instruction[4];
 	int8_t Max_point_temp,Max_point;
 	int8_t Spin_once = 0;
-	Max_point_temp = Solver(First_point, Last_point, Previous_point, Turn_Instruction, Map_Point, Instruction);
-	Max_point = Max_point_temp + (Max_point_temp - 1) - 1;
+	int8_t Path_guidance = 1;
 	lcd_send_cmd(0x80 | 0x00);
 	lcd_send_string("Car is Running!        ");
 	lcd_send_cmd(0x80 | 0x40);
 	lcd_send_string("Press C for cancel     ");
 	Previous_Line = LINE_MIDDLE;
 	while (cancel_running) {
+		if(Begin_solving == 1)
+		{
 	/*======================== CACULATING SPEED EACH 300ms ============================================*/
 			unsigned long currentMillis  = HAL_GetTick();
 			Encoder_Read();
@@ -963,28 +966,32 @@ void Running(void) // Activate the car for running
 				countLeft_prv = countLeft;
 				countRight_prv = countRight;
 			}
+			if(Path_guidance == 1)
+			{
+				Max_point_temp = Solver(First_point, Last_point, Previous_point, Turn_Instruction, Map_Point, Instruction);
+				Max_point = Max_point_temp + (Max_point_temp - 1) - 1;
+				Path_guidance = 0;
+			}
 			Sensor_Convert_A2D();
 			Go_Straight();
 			Temp_Line = (LineDetect & 0b10000100);
 			if(Temp_Line == 0b10000000 || Temp_Line == 0b00000100 || Temp_Line == 0b10000100)
 			{
+				if(Temp_Line == 0b10000000)
+				{
+					Error_Val = 2400;
+				}
+				else if(Temp_Line == 0b00000100)
+				{
+					Error_Val = 4500;
+				}
 				Sensor_Convert_A2D();
 				Previous_Line = LINE_HALF_BLACK;
 				if(point_passed == Max_point - 1)
 				{
-					Max_point = 0;
 					First_point = Last_point;
 					Previous_point = Map_Point[Max_point_temp - 2];
-					Error_Val = Previous_point;
-
-					/*Reset variable after done*/
-					memset(Instruction,0,sizeof(Instruction));
-					memset(Map_Point,0,sizeof(Map_Point));
-					memset(Turn_Instruction,0,sizeof(Turn_Instruction));
-					point_passed = -1;
-					Max_point = 0;
-					Max_point_temp = 0;
-					cancel_running = 0;
+					Begin_solving = 0;
 				}
 				if(Spin_once == 0 && (Turn_Instruction[0] == TURN_180DEG_LEFT || Turn_Instruction[0] == TURN_180DEG_RIGHT || Turn_Instruction[0] == TURN_180DEG_STRAIGHT))
 				{
@@ -1055,28 +1062,40 @@ void Running(void) // Activate the car for running
 				Trans_flag = DATA_TRANS_DIS;
 				lcd_send_cmd(0x80 | 0x00);
 				lcd_send_string("Car is Pause        ");
-				MotorR_SetPWM(0);
-				MotorL_SetPWM(0);
 			}
 			else
 			{
 				Trans_flag = DATA_TRANS_EN;
 				lcd_send_cmd(0x80 | 0x00);
 				lcd_send_string("Car is Running!        ");
-				MotorR_SetPWM(Motor_Speed_R);
-				MotorL_SetPWM(Motor_Speed_L);
 			}
-
 		}
+		else if(Begin_solving == 0)
+		{
+			MotorL_SetPWM(0);
+			MotorR_SetPWM(0);
+		/*Reset value after done solving the matrix*/
+			memset(Instruction,0,sizeof(Instruction));
+			memset(Map_Point,0,sizeof(Map_Point));
+			memset(Turn_Instruction,0,sizeof(Turn_Instruction));
+			point_passed = -1;
+			Max_point = 0;
+			Max_point_temp = 0;
+			Temp_Line = 0;
+			Spin_once = 0;
+			Path_guidance = 1;
+			Max_point = 0;
+		}
+	}
 	MotorL_SetPWM(0);
 	MotorR_SetPWM(0);
 	lcd_clear();
 }
 static void Left_Turn()
 {
-	MotorR_SetPWM(4500);
+	MotorR_SetPWM(4900);
 	MotorL_SetPWM(-3000);
-	HAL_Delay(20);
+	HAL_Delay(80);
 	while((LineDetect & 0b11000000) <= 64)
 	{
 		Sensor_Convert_A2D();

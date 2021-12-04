@@ -48,7 +48,7 @@ SoftwareSerial ss(14,5);
 /*  Private variable declaration ----------------------------------*/
 const char* Host_Socket1 = "192.168.1.32";
 const char* Host_Socket2 = "192.168.1.234";
-unsigned int Port_Socket = 3000;
+unsigned int Port_Socket = 8000;
 float P,I,D;
 uint8_t State,First,Last;
 String Final_string_2;
@@ -73,8 +73,8 @@ void setup() {
    webSocket.on("PID_value",PID_handle);
    webSocket.on("Car_State",Car_State_handle);
    webSocket.on("First_Last",Matrix_handle);
-   webSocket.begin(Host_Socket2, Port_Socket, "/socket.io/?transport=websocket");
-  //webSocket.begin(Host_Socket1, Port_Socket, "/socket.io/?EIO=3&transport=websocket");
+//   webSocket.begin(Host_Socket2, Port_Socket, "/socket.io/?transport=websocket");
+   webSocket.begin(Host_Socket2, Port_Socket, "/socket.io/?EIO=3&transport=websocket");
    pinMode(LED_BUILTIN, HIGH);
 }
 
@@ -147,7 +147,7 @@ void loop() {
 /*-----------------------------------------------------------------  Request for Information during run time -------------------------------*/
   if(Read_Flag == DATA_SEND_REQ_EN){
 /*	Data being read every 50ms --------------------------------------------*/
-    if (endTime - beginTime > 400) {
+    if (endTime - beginTime > 50) {
       String data = "";
       switch(Number_of_data){
 /*  Request for ERROR from STM32 ------------------------------------------*/
