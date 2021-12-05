@@ -12,6 +12,7 @@
 #define SRC_MATRIX_SOLVER_H_
 int8_t Solver(int Dau, int Cuoi, int Truoc, int takeResult[4], int Step[4], int Run_Str[8]);
 void GetString(int8_t Dau,int8_t Cuoi ,char *Result);
+void GetString_Transfer(int8_t Dau,int8_t Cuoi ,char *Result);
 
 
 #endif /* SRC_MATRIX_SOLVER_H_ */

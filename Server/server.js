@@ -60,6 +60,9 @@ io.on("connection", function (socket) {
         console.log(data);
         io.sockets.emit("Bootup");
     });
+    socket.on("Path_dir", function (data) {
+        console.log(data);
+    })
 });
 
 app.get("/", function (req, res) {

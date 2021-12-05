@@ -249,10 +249,8 @@ static void Control(int C[12][12][12], char control[6][3], int result[4], int le
 }
 int8_t Solver(int Dau, int Cuoi, int Truoc, int takeResult[4], int Step[4], int Run_Str[8])
 {
-    char buffer[5] = {0};
-    char concat_buffer[20] = {0};
     char controlArr[12][12];
-    const int A[12][12] = {
+    int A[12][12] = {
         {0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0},
         {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0},
         {0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
@@ -298,6 +296,27 @@ void GetString(int8_t Dau,int8_t Cuoi ,char *Result)
         else
         {
             sprintf(buffer, "%d -> ", getStep[i]);
+            strcat(concat_buffer, buffer);
+        }
+    }
+    strcpy(Result, concat_buffer);
+}
+void GetString_Transfer(int8_t Dau,int8_t Cuoi ,char *Result)
+{
+    char buffer[5] = {0};
+    char concat_buffer[20] = {0};
+    int getStep[4];
+    int length = Solver(Dau,Cuoi,12,0,getStep,0);
+    for (int8_t i = 0; i < length; i++)
+    {
+        if (i == length - 1)
+        {
+            sprintf(buffer, "%d\"", getStep[i]);
+            strcat(concat_buffer, buffer);
+        }
+        else
+        {
+            sprintf(buffer, "%d ", getStep[i]);
             strcat(concat_buffer, buffer);
         }
     }

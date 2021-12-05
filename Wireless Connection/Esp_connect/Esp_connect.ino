@@ -41,6 +41,10 @@
 /*  PID Bootup ----------------------------------------------------*/
 #define PID_BOOTUP          1U
 #define PID_SHUTDOWN        0U
+
+/*  PATH Request from ESP -----------------------------------------*/
+#define PATH_REQ            1U
+#define PATH_NO_REQ         0U
 /*  Library variable declaration ----------------------------------*/
 SocketIoClient webSocket;
 SoftwareSerial ss(14,5);
@@ -60,6 +64,7 @@ uint8_t Read_Flag = DATA_SEND_REQ_DIS;
 uint8_t Read_PID = DATA_SEND_PID_EN;
 uint8_t Boot = STM32_SHUTDOWN;
 uint8_t PID_Boot = STM32_SHUTDOWN;
+uint8_t Path_Req = PATH_NO_REQ;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -129,6 +134,7 @@ void loop() {
         data = data + temp;
         delay(10);
       }
+      data = data + "\"";
       int len=1;
       while (data[len] != NULL){
         len++;
@@ -139,11 +145,42 @@ void loop() {
       /*  Send STM32 bootup state -----------------------------------------*/
       Serial.print(data);
       PID_Boot = PID_SHUTDOWN;
-      Read_Flag = DATA_SEND_REQ_EN;
-      delay(15);
+//      Read_Flag = DATA_SEND_REQ_EN;
     }
   }
 
+  if(Path_Req == PATH_REQ)
+  {
+    if (endTime - beginTime > 5) {
+      String data = "";
+/*  Request for BOOTUP State from STM32 ------------------------------------------*/
+      Send_Request_ID(9);
+      beginTime = millis();
+    }
+    
+    if (ss.available()>0){
+      String data = "\"";
+      int beginTimeSS, endTimeSS = millis();
+      while (ss.available()>0){
+        char temp = ss.read();
+        data = data + temp;
+        delay(10);
+      }
+      data = data + "\"";
+      int len=1;
+      while (data[len] != NULL){
+        len++;
+      }
+      char str[len+1];
+      data.toCharArray(str, len+1);
+      webSocket.emit("Path_dir", str);
+      /*  Send STM32 bootup state -----------------------------------------*/
+      Serial.print(data);
+      Path_Req = PATH_NO_REQ;
+      Read_Flag = DATA_SEND_REQ_EN;
+    }
+  }
+  
 /*-----------------------------------------------------------------  Request for Information during run time -------------------------------*/
   if(Read_Flag == DATA_SEND_REQ_EN){
 /*	Data being read every 50ms --------------------------------------------*/
@@ -336,6 +373,8 @@ void Matrix_String_compression(int First,int Last){
      Final_string[i + ID_Buffer_Size + First_string_Size + Last_string_Size] = '0';
   }
   ss.write(Final_string,Send_Buffer_Size);
+  Path_Req = PATH_REQ;
+  Read_Flag = DATA_SEND_REQ_DIS; 
 }
 void Send_Request_ID (uint8_t ID)
 {

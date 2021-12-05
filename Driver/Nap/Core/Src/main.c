@@ -64,6 +64,8 @@
 #define DATA_RIGHT_REQ					6U
 #define DATA_PID_REQ					7U
 #define DATA_BOOT_REQ					8U
+#define DATA_PATH_REQ					9U
+#define DATA_POINT_REQ					10U
 
 /* Car State -----------------------------------------------------------------*/
 #define CAR_IS_RUNNING					1U
@@ -276,9 +278,21 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		char Boot[1] = "1";
 		HAL_UART_Transmit(&huart6, Boot, sizeof(Boot), 1000);
 	}
+	else if(ID == DATA_PATH_REQ)
+	{
+		char PATH_DIR[15];
+		memset(PATH_DIR,0,sizeof(PATH_DIR));
+		GetString_Transfer(First_point, Last_point, PATH_DIR);
+		HAL_UART_Transmit(&huart6, PATH_DIR, sizeof(PATH_DIR), 5000);
+	}
+	else if(ID == DATA_POINT_REQ)
+	{
+
+	}
 	memset(Rx_Buffer_copied,0,sizeof(Rx_Buffer_copied));
 	memset(Rx_Buffer,0,sizeof(Rx_Buffer));
 	HAL_UART_Receive_IT(&huart6, Rx_Buffer, RECEIVE_BUFF_SIZE);
+
 }
 
 void Encoder_Read()
@@ -910,7 +924,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2|GPIO_PIN_10|GPIO_PIN_5, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2|GPIO_PIN_10|GPIO_PIN_12|GPIO_PIN_5, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : ButtonC_Pin */
   GPIO_InitStruct.Pin = ButtonC_Pin;
@@ -924,8 +938,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB2 PB10 PB5 */
-  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_10|GPIO_PIN_5;
+  /*Configure GPIO pins : PB2 PB10 PB12 PB5 */
+  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_10|GPIO_PIN_12|GPIO_PIN_5;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -979,11 +993,11 @@ void Running(void) // Activate the car for running
 			{
 				if(Temp_Line == 0b10000000)
 				{
-					Error_Val = 2400;
+					Error_Val = 3100;
 				}
 				else if(Temp_Line == 0b00000100)
 				{
-					Error_Val = 4500;
+					Error_Val = 4300;
 				}
 				Sensor_Convert_A2D();
 				Previous_Line = LINE_HALF_BLACK;
@@ -1095,7 +1109,7 @@ static void Left_Turn()
 {
 	MotorR_SetPWM(4900);
 	MotorL_SetPWM(-3000);
-	HAL_Delay(80);
+	HAL_Delay(160);
 	while((LineDetect & 0b11000000) <= 64)
 	{
 		Sensor_Convert_A2D();
@@ -1148,14 +1162,14 @@ static void Go_Straight()
 static int Error_Return (uint8_t Sensor_Array){
 	switch(Sensor_Array){
 	case 0b00001000:
-		return 4300;
+		return 4100;
 		break;
 	case 0b00011000:
-		return 4000;
+		return 3900;
 		break;
 
 	case 0b00010000:
-		return 3800;
+		return 3700;
 		break;
 
 	case 0b00000000:
@@ -1167,14 +1181,14 @@ static int Error_Return (uint8_t Sensor_Array){
 		break;
 
 	case 0b00100000:
-		return 3400;
+		return 3300;
 		break;
 
 	case 0b01100000:
-		return 3000;
+		return 3100;
 		break;
 	case 0b01000000:
-		return 2600;
+		return 2900;
 		break;
 /*---------------------dont care------------------------*/
 	default:
