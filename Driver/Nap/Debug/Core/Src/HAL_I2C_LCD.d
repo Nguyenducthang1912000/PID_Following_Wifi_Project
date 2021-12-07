@@ -37,7 +37,7 @@ Core/Src/HAL_I2C_LCD.o: ../Core/Src/HAL_I2C_LCD.c \
  ../Core/Inc/HAL_I2C_LCD.h ../Core/Inc/HAL_MOTOR_CONTROL.h \
  ../Core/Inc/main.h ../Core/Inc/PID.h ../Core/Inc/DISPLAY_MENU.h \
  ../Core/Inc/FLASH_SECTOR.h ../Core/Inc/UartRingBuffer.h \
- ../Core/Inc/Matrix_solver.h
+ ../Core/Inc/Matrix_solver.h ../Core/Inc/rc522.h
 
 ../Core/Inc/HAL_I2C_LCD.h:
 
@@ -126,3 +126,5 @@ Core/Src/HAL_I2C_LCD.o: ../Core/Src/HAL_I2C_LCD.c \
 ../Core/Inc/UartRingBuffer.h:
 
 ../Core/Inc/Matrix_solver.h:
+
+../Core/Inc/rc522.h:

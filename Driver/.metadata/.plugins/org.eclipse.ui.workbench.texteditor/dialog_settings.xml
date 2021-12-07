@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="buffer"/>
+		<item key="selection" value="Trans_flag"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="Trans_flag"/>
+			<item value="RFID_Str"/>
+			<item value="(LineDetect &amp; 0b10000100) == 0b00000100"/>
+			<item value="STATION_ID"/>
+			<item value="cancel_menu"/>
+			<item value="hspi"/>
+			<item value="hspi2"/>
 			<item value="buffer"/>
 			<item value="point_passed"/>
 			<item value="Solve_once"/>
@@ -16,13 +23,6 @@
 			<item value="for"/>
 			<item value="99"/>
 			<item value="Left_Turn_Ngaba"/>
-			<item value="0.94"/>
-			<item value="Kp"/>
-			<item value="6.4"/>
-			<item value="Car"/>
-			<item value="Color_Read"/>
-			<item value="string_2"/>
-			<item value="Rx_Buff"/>
 		</list>
 		<list key="replacehistory">
 			<item value="RECEIVE_BUFF_SIZE"/>
@@ -40,8 +40,8 @@
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item key="DIALOG_X_ORIGIN" value="593"/>
-		<item key="DIALOG_Y_ORIGIN" value="418"/>
+		<item key="DIALOG_X_ORIGIN" value="897"/>
+		<item key="DIALOG_Y_ORIGIN" value="555"/>
 		<item key="DIALOG_WIDTH" value="336"/>
 		<item key="DIALOG_HEIGHT" value="454"/>
 		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-15|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>

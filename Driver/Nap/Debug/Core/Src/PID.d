@@ -36,7 +36,7 @@ Core/Src/PID.o: ../Core/Src/PID.c ../Core/Inc/PID.h ../Core/Inc/main.h \
  ../Core/Inc/HAL_I2C_LCD.h ../Core/Inc/HAL_MOTOR_CONTROL.h \
  ../Core/Inc/main.h ../Core/Inc/PID.h ../Core/Inc/DISPLAY_MENU.h \
  ../Core/Inc/FLASH_SECTOR.h ../Core/Inc/UartRingBuffer.h \
- ../Core/Inc/Matrix_solver.h
+ ../Core/Inc/Matrix_solver.h ../Core/Inc/rc522.h
 
 ../Core/Inc/PID.h:
 
@@ -125,3 +125,5 @@ Core/Src/PID.o: ../Core/Src/PID.c ../Core/Inc/PID.h ../Core/Inc/main.h \
 ../Core/Inc/UartRingBuffer.h:
 
 ../Core/Inc/Matrix_solver.h:
+
+../Core/Inc/rc522.h:

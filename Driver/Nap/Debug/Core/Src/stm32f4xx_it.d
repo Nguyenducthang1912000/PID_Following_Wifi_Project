@@ -37,7 +37,7 @@ Core/Src/stm32f4xx_it.o: ../Core/Src/stm32f4xx_it.c ../Core/Inc/main.h \
  ../Core/Inc/HAL_MOTOR_CONTROL.h ../Core/Inc/PID.h \
  ../Core/Inc/DISPLAY_MENU.h ../Core/Inc/FLASH_SECTOR.h \
  ../Core/Inc/UartRingBuffer.h ../Core/Inc/Matrix_solver.h \
- ../Core/Inc/stm32f4xx_it.h
+ ../Core/Inc/rc522.h ../Core/Inc/stm32f4xx_it.h
 
 ../Core/Inc/main.h:
 
@@ -124,5 +124,7 @@ Core/Src/stm32f4xx_it.o: ../Core/Src/stm32f4xx_it.c ../Core/Inc/main.h \
 ../Core/Inc/UartRingBuffer.h:
 
 ../Core/Inc/Matrix_solver.h:
+
+../Core/Inc/rc522.h:
 
 ../Core/Inc/stm32f4xx_it.h:

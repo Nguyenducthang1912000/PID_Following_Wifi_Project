@@ -62,6 +62,10 @@ io.on("connection", function (socket) {
     });
     socket.on("Path_dir", function (data) {
         console.log(data);
+    });
+    socket.on("STATION_ID", function (data) {
+        console.log(data);
+        io.sockets.emit("STATION_ID_received", data);
     })
 });
 

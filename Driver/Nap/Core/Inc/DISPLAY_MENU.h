@@ -19,7 +19,7 @@ extern uint8_t Left_modify_flag, Right_modify_flag;
 extern uint8_t First_point_modify_flag, Last_point_modify_flag;
 /* Exit menu showing process ------------------------------------------------*/
 extern uint8_t cancel_menu;
-
+extern uint8_t cancel_reading_card;
 
 /* Exit running process -----------------------------------------------------*/
 extern uint8_t cancel_running;

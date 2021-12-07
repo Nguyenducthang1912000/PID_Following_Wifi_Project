@@ -19,19 +19,22 @@
 #define REQ_STM_ERROR       0U
 #define REQ_STM_LEFT        1U
 #define REQ_STM_RIGHT       2U
-#define REQ_STM_PID         3U
-/*	Flags ---------------------------------------------------------*/
-#define	DATA_SEND_REQ_DIS		0U
-#define DATA_SEND_REQ_EN		1U
-#define DATA_SEND_PID_DIS		0U
-#define DATA_SEND_PID_EN		1U
+#define REQ_STM_STATION_ID  3U
+#define REQ_STM_PATH_STS    4U
+#define REQ_RFID_ID         5U
+
+/*  Flags ---------------------------------------------------------*/
+#define DATA_SEND_REQ_DIS   0U
+#define DATA_SEND_REQ_EN    1U
+#define DATA_SEND_PID_DIS   0U
+#define DATA_SEND_PID_EN    1U
 /*  Formula for Buffer --------------------------------------------*/
 // Cach tinh Send_Buffer_Size = ID_Buffer_Size + Kp_Buffer_Size + Ki_Buffer_Size + Kd_Buffer_Size - 4
 // Cach tinh Buffer cho tung Kp,Ki,Kd => size thuc + gia tri \0 (+1)
 
 /*  Message ID ----------------------------------------------------*/
-#define PID_Message_ID 1
-#define Car_State_Message_ID 2
+#define PID_Message_ID        1
+#define Car_State_Message_ID  2
 #define First_Last_Message_ID 3
 
 /*  STM32 Bootup --------------------------------------------------*/
@@ -41,10 +44,6 @@
 /*  PID Bootup ----------------------------------------------------*/
 #define PID_BOOTUP          1U
 #define PID_SHUTDOWN        0U
-
-/*  PATH Request from ESP -----------------------------------------*/
-#define PATH_REQ            1U
-#define PATH_NO_REQ         0U
 /*  Library variable declaration ----------------------------------*/
 SocketIoClient webSocket;
 SoftwareSerial ss(14,5);
@@ -64,7 +63,32 @@ uint8_t Read_Flag = DATA_SEND_REQ_DIS;
 uint8_t Read_PID = DATA_SEND_PID_EN;
 uint8_t Boot = STM32_SHUTDOWN;
 uint8_t PID_Boot = STM32_SHUTDOWN;
-uint8_t Path_Req = PATH_NO_REQ;
+void Send_Request_ID (uint8_t ID)
+{
+    char string[22];
+    string[0] = ID + '0';
+    string[1] = ' ';
+    for(int i=0; i<20; i++)
+    {
+      string[i+2] = '0';
+    }
+    ss.write(string,22);
+    delay(20);
+}
+
+void Send_Request_ID_2_Number (uint8_t ID)
+{
+    char string[22];
+    string[0] = (ID/10) + '0';
+    string[1] = (ID%10) + '0';
+    string[2] = ' ';
+    for(int i=0; i<19; i++)
+    {
+      string[i+3] = '0';
+    }
+    ss.write(string,22);
+    delay(20);
+}
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -78,8 +102,8 @@ void setup() {
    webSocket.on("PID_value",PID_handle);
    webSocket.on("Car_State",Car_State_handle);
    webSocket.on("First_Last",Matrix_handle);
-//   webSocket.begin(Host_Socket2, Port_Socket, "/socket.io/?transport=websocket");
-   webSocket.begin(Host_Socket2, Port_Socket, "/socket.io/?EIO=3&transport=websocket");
+//   webSocket.begin(Host_Socket2, 3000, "/socket.io/?transport=websocket");
+   webSocket.begin(Host_Socket2, 8000, "/socket.io/?EIO=3&transport=websocket");
    pinMode(LED_BUILTIN, HIGH);
 }
 
@@ -134,7 +158,6 @@ void loop() {
         data = data + temp;
         delay(10);
       }
-      data = data + "\"";
       int len=1;
       while (data[len] != NULL){
         len++;
@@ -145,45 +168,14 @@ void loop() {
       /*  Send STM32 bootup state -----------------------------------------*/
       Serial.print(data);
       PID_Boot = PID_SHUTDOWN;
-//      Read_Flag = DATA_SEND_REQ_EN;
+      Read_Flag = DATA_SEND_REQ_EN;
+      delay(15);
     }
   }
 
-  if(Path_Req == PATH_REQ)
-  {
-    if (endTime - beginTime > 5) {
-      String data = "";
-/*  Request for BOOTUP State from STM32 ------------------------------------------*/
-      Send_Request_ID(9);
-      beginTime = millis();
-    }
-    
-    if (ss.available()>0){
-      String data = "\"";
-      int beginTimeSS, endTimeSS = millis();
-      while (ss.available()>0){
-        char temp = ss.read();
-        data = data + temp;
-        delay(10);
-      }
-      data = data + "\"";
-      int len=1;
-      while (data[len] != NULL){
-        len++;
-      }
-      char str[len+1];
-      data.toCharArray(str, len+1);
-      webSocket.emit("Path_dir", str);
-      /*  Send STM32 bootup state -----------------------------------------*/
-      Serial.print(data);
-      Path_Req = PATH_NO_REQ;
-      Read_Flag = DATA_SEND_REQ_EN;
-    }
-  }
-  
 /*-----------------------------------------------------------------  Request for Information during run time -------------------------------*/
   if(Read_Flag == DATA_SEND_REQ_EN){
-/*	Data being read every 50ms --------------------------------------------*/
+/*  Data being read every 50ms --------------------------------------------*/
     if (endTime - beginTime > 50) {
       String data = "";
       switch(Number_of_data){
@@ -199,11 +191,17 @@ void loop() {
         case REQ_STM_RIGHT:
           Send_Request_ID(6);
           break;
+        case REQ_STM_STATION_ID:
+          Send_Request_ID_2_Number(10);
+          break;
+        case REQ_RFID_ID:
+          Send_Request_ID_2_Number(11);
+          break;    
       }
       beginTime = millis();
     }
-	
-/*	Read DATA from STM32 --------------------------------------------------*/
+  
+/*  Read DATA from STM32 --------------------------------------------------*/
     if (ss.available()>0)
     {
       String data = "";
@@ -234,6 +232,14 @@ void loop() {
 /*  Read RIGHT SPEED from STM32 ------------------------------------------*/
         case REQ_STM_RIGHT:
           webSocket.emit("Right_Eng", str);
+          Number_of_data = REQ_STM_STATION_ID;
+          break;
+        case REQ_STM_STATION_ID:
+          webSocket.emit("STATION_ID", str);
+          Number_of_data = REQ_RFID_ID;
+          break;
+        case REQ_RFID_ID:
+          webSocket.emit("RFID_ID", str);
           Number_of_data = REQ_STM_ERROR;
           break;
       }
@@ -373,18 +379,29 @@ void Matrix_String_compression(int First,int Last){
      Final_string[i + ID_Buffer_Size + First_string_Size + Last_string_Size] = '0';
   }
   ss.write(Final_string,Send_Buffer_Size);
-  Path_Req = PATH_REQ;
-  Read_Flag = DATA_SEND_REQ_DIS; 
-}
-void Send_Request_ID (uint8_t ID)
-{
-    char string[22];
-    string[0] = ID + '0';
-    string[1] = ' ';
-    for(int i=0; i<20; i++)
-    {
-      string[i+2] = '0';
+  if (endTime - beginTime > 1) {
+      String data = "";
+/*  Request for BOOTUP State from STM32 ------------------------------------------*/
+      Send_Request_ID(9);
+      beginTime = millis();
     }
-    ss.write(string,22);
-    delay(20);
+    
+    if (ss.available()>0){
+      String data = "\"";
+      int beginTimeSS, endTimeSS = millis();
+      while (ss.available()>0){
+        char temp = ss.read();
+        data = data + temp;
+        delay(10);
+      }
+      data = data + "\"";
+      int len=1;
+      while (data[len] != NULL){
+        len++;
+      }
+      char str[len+1];
+      data.toCharArray(str, len+1);
+      webSocket.emit("Path_dir", str); 
+      /*  Send STM32 bootup state -----------------------------------------*/
+    }
 }

@@ -9,6 +9,7 @@
 		<item key="SmartImportRootWizardPage.STORE_NESTED_PROJECTS" value="true"/>
 		<item key="SmartImportRootWizardPage.STORE_CONFIGURE_NATURES" value="true"/>
 		<list key="org.eclipse.ui.internal.wizards.datatransfer.SmartImportRootWizardPage.knownSources">
+			<item value="C:\Users\Admin\Downloads\STM32 RFID RC522\STM32 RFID RC522\RFID_STM32"/>
 			<item value="D:\stm32-uart-ring-buffer"/>
 		</list>
 	</section>

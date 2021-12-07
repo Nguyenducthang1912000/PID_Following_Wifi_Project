@@ -23,6 +23,9 @@ $(document).ready(function () {
         document.getElementById("PID_D").value = data.Kd;
 
     })
+    socket.on("STATION_ID_received", function (data) {
+        document.getElementById("Station_ID_display").value = data;
+    })
     $("#BTN_Submit").click(function () {
         var Kp = parseFloat(document.getElementById("PID_P").value);
         var Ki = parseFloat(document.getElementById("PID_I").value);

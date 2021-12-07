@@ -66,6 +66,7 @@
 #define DATA_BOOT_REQ					8U
 #define DATA_PATH_REQ					9U
 #define DATA_POINT_REQ					10U
+#define DATA_RFID_REQ					11U
 
 /* Car State -----------------------------------------------------------------*/
 #define CAR_IS_RUNNING					1U
@@ -149,6 +150,9 @@ uint8_t Flag_u8 = 0;
 int8_t First_point = 0,Last_point = 0,Previous_point = 7;
 int8_t Begin_solving = 0;
 uint8_t count;
+uint8_t STATION_ID = 0;
+uint8_t cancel_reading_card = 1;
+uint8_t RFID_ID_ready = 0;
 int16_t Left = 3390, Right = 3200;
 int16_t positionLeft = 0, positionRight = 0;
 uint16_t Sensor_Threshold[] = { 3900, 3900, 3900, 4000, 4000, 4000 };
@@ -173,9 +177,10 @@ char string_2[1];
 char PID_Rx[12];
 char kp_val[10], ki_val[10], kd_val[10];
 char Rx_Buffer[RECEIVE_BUFF_SIZE],Rx_Buffer_copied[RECEIVE_BUFF_SIZE];
+char RFID_Str[20] = "2398801a21";
 unsigned long previousMillis = 0;
 unsigned long time;
-
+unsigned char CardID[5];
 PIDController Car = {0,0,0,0,-400,400};
 /* USER CODE END PV */
 
@@ -205,6 +210,27 @@ static void Go_Straight();
 static void Left_Turn();
 static void Right_Turn();
 static void Turn_180_Deg();
+
+// RC522
+uint8_t MFRC522_Check(uint8_t* id);
+uint8_t MFRC522_Compare(uint8_t* CardID, uint8_t* CompareID);
+void MFRC522_WriteRegister(uint8_t addr, uint8_t val);
+uint8_t MFRC522_ReadRegister(uint8_t addr);
+void MFRC522_SetBitMask(uint8_t reg, uint8_t mask);
+void MFRC522_ClearBitMask(uint8_t reg, uint8_t mask);
+uint8_t MFRC522_Request(uint8_t reqMode, uint8_t* TagType);
+uint8_t MFRC522_ToCard(uint8_t command, uint8_t* sendData, uint8_t sendLen, uint8_t* backData, uint16_t* backLen);
+uint8_t MFRC522_Anticoll(uint8_t* serNum);
+void MFRC522_CalulateCRC(uint8_t* pIndata, uint8_t len, uint8_t* pOutData);
+uint8_t MFRC522_SelectTag(uint8_t* serNum);
+uint8_t MFRC522_Auth(uint8_t authMode, uint8_t BlockAddr, uint8_t* Sectorkey, uint8_t* serNum);
+uint8_t MFRC522_Read(uint8_t blockAddr, uint8_t* recvData);
+uint8_t MFRC522_Write(uint8_t blockAddr, uint8_t* writeData);
+void MFRC522_Init(void);
+void MFRC522_Reset(void);
+void MFRC522_AntennaOn(void);
+void MFRC522_AntennaOff(void);
+void MFRC522_Halt(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -287,7 +313,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
 	else if(ID == DATA_POINT_REQ)
 	{
-
+		char STATION_ID_str[4];
+		sprintf(STATION_ID_str,"%d",STATION_ID);
+		HAL_UART_Transmit(&huart6, STATION_ID_str, sizeof(STATION_ID_str), 2000);
+	}
+	else if(ID == DATA_RFID_REQ)
+	{
+		HAL_UART_Transmit(&huart6, RFID_Str,sizeof(RFID_Str),2000);
 	}
 	memset(Rx_Buffer_copied,0,sizeof(Rx_Buffer_copied));
 	memset(Rx_Buffer,0,sizeof(Rx_Buffer));
@@ -351,6 +383,7 @@ int main(void)
   HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL);
   PIDController_Car_Init(&Car);
+  MFRC522_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -577,7 +610,7 @@ static void MX_SPI2_Init(void)
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -924,7 +957,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2|GPIO_PIN_10|GPIO_PIN_12|GPIO_PIN_5, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2|GPIO_PIN_10|GPIO_PIN_5, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : ButtonC_Pin */
   GPIO_InitStruct.Pin = ButtonC_Pin;
@@ -938,8 +971,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB2 PB10 PB12 PB5 */
-  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_10|GPIO_PIN_12|GPIO_PIN_5;
+  /*Configure GPIO pins : PB2 PB10 PB5 */
+  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_10|GPIO_PIN_5;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -961,6 +994,8 @@ void Running(void) // Activate the car for running
 	int8_t Max_point_temp,Max_point;
 	int8_t Spin_once = 0;
 	int8_t Path_guidance = 1;
+	int8_t station_count = -1;
+	uint8_t Read_RFID_Flag = 0;
 	lcd_send_cmd(0x80 | 0x00);
 	lcd_send_string("Car is Running!        ");
 	lcd_send_cmd(0x80 | 0x40);
@@ -1003,9 +1038,12 @@ void Running(void) // Activate the car for running
 				Previous_Line = LINE_HALF_BLACK;
 				if(point_passed == Max_point - 1)
 				{
+					station_count = station_count + 1;
+					STATION_ID = Map_Point[station_count];
 					First_point = Last_point;
 					Previous_point = Map_Point[Max_point_temp - 2];
 					Begin_solving = 0;
+					Read_RFID_Flag = 1;
 				}
 				if(Spin_once == 0 && (Turn_Instruction[0] == TURN_180DEG_LEFT || Turn_Instruction[0] == TURN_180DEG_RIGHT || Turn_Instruction[0] == TURN_180DEG_STRAIGHT))
 				{
@@ -1030,6 +1068,8 @@ void Running(void) // Activate the car for running
 						switch(Instruction[point_passed])
 						{
 						case TURN_SKIP_POINT:
+							station_count = station_count + 1;
+							STATION_ID = Map_Point[station_count];
 							Go_Straight();
 							break;
 						case TURN_LEFT:
@@ -1099,12 +1139,66 @@ void Running(void) // Activate the car for running
 			Spin_once = 0;
 			Path_guidance = 1;
 			Max_point = 0;
+			station_count = -1;
+			if(Read_RFID_Flag == 1){
+				Read_RFID_CARD();
+				Read_RFID_Flag = 0;
+			}
 		}
 	}
 	MotorL_SetPWM(0);
 	MotorR_SetPWM(0);
 	lcd_clear();
 }
+void Read_RFID_CARD()
+{
+	uint8_t recover_position = 0;
+	uint8_t enable = 1;
+	char Card_Buffer_Str[4];
+	char concat_Buff[20];
+	memset(concat_Buff,0,sizeof(concat_Buff));
+	memset(Card_Buffer_Str,0,sizeof(Card_Buffer_Str));
+	MotorL_SetPWM(2500);
+	MotorR_SetPWM(2500);
+	MFRC522_Init();
+	while(enable)
+	{
+		if (MFRC522_Check(CardID) == MI_OK)
+		{
+			MotorL_SetPWM(0);
+			MotorR_SetPWM(0);
+			sprintf(Card_Buffer_Str,"\"%02x",CardID[0]);
+			strcat(concat_Buff,Card_Buffer_Str);
+			sprintf(Card_Buffer_Str,"%02x",CardID[1]);
+			strcat(concat_Buff,Card_Buffer_Str);
+			sprintf(Card_Buffer_Str,"%02x",CardID[2]);
+			strcat(concat_Buff,Card_Buffer_Str);
+			sprintf(Card_Buffer_Str,"%02x",CardID[3]);
+			strcat(concat_Buff,Card_Buffer_Str);
+			sprintf(Card_Buffer_Str,"%02x\"",CardID[4]);
+			strcat(concat_Buff,Card_Buffer_Str);
+			strcpy(RFID_Str,concat_Buff);
+			RFID_ID_ready = 1;
+			enable = 0;
+			recover_position = 1;
+			MFRC522_Reset();
+		}
+	}
+	while(recover_position)
+	{
+		Sensor_Convert_A2D();
+		MotorL_SetPWM(-2500);
+		MotorR_SetPWM(-2500);
+		if((LineDetect & 0b10000100) == 0b10000000 || (LineDetect & 0b10000100) == 0b00000100 || (LineDetect & 0b10000100) == 0b10000100)
+		{
+			HAL_Delay(250);
+			recover_position = 0;
+		}
+	}
+	MotorL_SetPWM(0);
+	MotorR_SetPWM(0);
+}
+
 static void Left_Turn()
 {
 	MotorR_SetPWM(4900);
@@ -1422,7 +1516,11 @@ void MultifunctionButton(void)
 		line = 1;
 		cancel_menu = 0;
 		break;
-
+	case Saving_process:
+		cancel_reading_card = 0;
+		Menu_type = Main_menu;
+		line = 1;
+		break;
 	case Color_Processing:
 		Color_Read = 0;
 		break;
