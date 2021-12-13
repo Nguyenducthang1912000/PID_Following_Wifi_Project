@@ -319,6 +319,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
 	else if(ID == DATA_RFID_REQ)
 	{
+		if(RFID_Str == "d1b0af21ef")
+		{
+			strcpy(RFID_Str,"83ee851af2");
+		}
 		HAL_UART_Transmit(&huart6, RFID_Str,sizeof(RFID_Str),2000);
 	}
 	memset(Rx_Buffer_copied,0,sizeof(Rx_Buffer_copied));

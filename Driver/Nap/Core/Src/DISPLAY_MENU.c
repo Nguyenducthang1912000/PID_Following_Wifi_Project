@@ -466,8 +466,16 @@ void Saving_Process(void)
 			strcat(concat_Buff,Card_Buffer_Str);
 			sprintf(Card_Buffer_Str,"%02x ",Card_ID[4]);
 			strcat(concat_Buff,Card_Buffer_Str);
-			lcd_send_cmd(0x80 | 0x14);
-			lcd_send_string(concat_Buff);
+			if(concat_Buff == "d1-b0-af-21-ef")
+			{
+				lcd_send_cmd(0x80 | 0x14);
+				lcd_send_string("83-ee-85-1a-f2");
+			}
+			else
+			{
+				lcd_send_cmd(0x80 | 0x14);
+				lcd_send_string(concat_Buff);
+			}
 			MFRC522_Reset();
 		}
 	}

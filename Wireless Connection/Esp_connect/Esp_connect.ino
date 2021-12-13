@@ -49,8 +49,7 @@ SocketIoClient webSocket;
 SoftwareSerial ss(14,5);
 
 /*  Private variable declaration ----------------------------------*/
-const char* Host_Socket1 = "192.168.1.32";
-const char* Host_Socket2 = "192.168.1.234";
+const char* Host_Socket1 = "192.168.1.4";
 unsigned int Port_Socket = 8000;
 float P,I,D;
 uint8_t State,First,Last;
@@ -93,7 +92,7 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   ss.begin(9600);
-  WiFi.begin("Nguyen Duc Tam ", "ductammdf1059");
+  WiFi.begin("VNPT_HuynhHoa", "1234561991");
   while(WiFi.status() != WL_CONNECTED)
   {
   Serial.print(".");
@@ -103,7 +102,7 @@ void setup() {
    webSocket.on("Car_State",Car_State_handle);
    webSocket.on("First_Last",Matrix_handle);
 //   webSocket.begin(Host_Socket2, 3000, "/socket.io/?transport=websocket");
-   webSocket.begin(Host_Socket2, 8000, "/socket.io/?EIO=3&transport=websocket");
+   webSocket.begin(Host_Socket1, 8000, "/socket.io/?EIO=3&transport=websocket");
    pinMode(LED_BUILTIN, HIGH);
 }
 
