@@ -1,10 +1,35 @@
-01:24:11 **** Incremental Build of configuration Debug for project Nap ****
+01:26:31 **** Incremental Build of configuration Debug for project Nap ****
 make -j8 all 
+arm-none-eabi-gcc "../Core/Src/DISPLAY_MENU.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/DISPLAY_MENU.d" -MT"Core/Src/DISPLAY_MENU.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/DISPLAY_MENU.o"
+../Core/Src/DISPLAY_MENU.c: In function 'Saving_Process':
+../Core/Src/DISPLAY_MENU.c:450:2: warning: implicit declaration of function 'MFRC522_Init'; did you mean 'MFRC522_Reset'? [-Wimplicit-function-declaration]
+  450 |  MFRC522_Init();
+      |  ^~~~~~~~~~~~
+      |  MFRC522_Reset
+../Core/Src/DISPLAY_MENU.c:469:19: warning: comparison with string literal results in unspecified behavior [-Waddress]
+  469 |    if(concat_Buff == "d1-b0-af-21-ef ")
+      |                   ^~
+../Core/Src/DISPLAY_MENU.c: In function 'Path_Solver':
+../Core/Src/DISPLAY_MENU.c:534:44: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  534 |    sprintf(Last_str, " Last Point: %2d     ", Last_point);
+      |                                            ^
+../Core/Src/DISPLAY_MENU.c:534:4: note: 'sprintf' output between 21 and 23 bytes into a destination of size 20
+  534 |    sprintf(Last_str, " Last Point: %2d     ", Last_point);
+      |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arm-none-eabi-gcc -o "Nap.elf" @"objects.list"   -mcpu=cortex-m4 -T"D:\Baocaokhoaluan_BK\Driver\Nap\STM32F401CCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Nap.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Nap.elf
+ 
 arm-none-eabi-size   Nap.elf 
+arm-none-eabi-objdump -h -S  Nap.elf  > "Nap.list"
+arm-none-eabi-objcopy  -O binary  Nap.elf  "Nap.bin"
    text	   data	    bss	    dec	    hex	filename
   66164	    592	   2824	  69580	  10fcc	Nap.elf
 Finished building: default.size.stdout
  
+Finished building: Nap.bin
+ 
+Finished building: Nap.list
+ 
 
-01:24:12 Build Finished. 0 errors, 0 warnings. (took 388ms)
+01:26:33 Build Finished. 0 errors, 3 warnings. (took 1s.653ms)
 

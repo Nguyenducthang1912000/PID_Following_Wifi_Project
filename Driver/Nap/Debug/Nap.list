@@ -2617,7 +2617,7 @@ void Saving_Process(void)
  80019aa:	4611      	mov	r1, r2
  80019ac:	4618      	mov	r0, r3
  80019ae:	f009 ffd5 	bl	800b95c <strcat>
-			if(concat_Buff == "d1-b0-af-21-ef")
+			if(concat_Buff == "d1-b0-af-21-ef ")
  80019b2:	463b      	mov	r3, r7
  80019b4:	4a13      	ldr	r2, [pc, #76]	; (8001a04 <Saving_Process+0x13c>)
  80019b6:	4293      	cmp	r3, r2
